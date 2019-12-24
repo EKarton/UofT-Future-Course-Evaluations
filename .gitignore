@@ -1,3 +1,10 @@
+# Ignoring virtualenv files
+bin/
+include/
+__pycache__/
+share/
+lib/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -47,7 +54,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 .pytest_cache/
 
@@ -91,12 +97,8 @@ ipython_config.py
 #   install all needed dependencies.
 #Pipfile.lock
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
+# celery beat schedule file
 celerybeat-schedule
-celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -127,3 +129,19 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VS Code
+.vscode
+
+Run-On-CDF-Machines.sh
+Check-ML-Status.sh
+
+# Remove credentials
+.env
+
+# Remove existing data
+filename
+#raw-course-evaluations.csv
+#data.csv
+
+#*.csv
