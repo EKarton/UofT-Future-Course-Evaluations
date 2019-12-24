@@ -22,7 +22,7 @@ def make_prediction(course_code, instructor):
     return output_scaler.inverse_transform(prediction)
 
 @app.route('/api/evals', methods=['GET'])
-def get_evals():
+def get_future_evals():
     courses = request.args.get('courses').split(',')
     instructors = request.args.get('instructors').split(',')
     print(courses)
