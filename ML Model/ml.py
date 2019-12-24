@@ -97,4 +97,5 @@ with open('saved-input-encoder.pkl', 'wb') as input_encoder_file:
     pickle.dump(input_encoder, input_encoder_file)
 
 # Save the model to a file (cannot use Pickle)
-joblib.dump(model, 'saved-model.joblib')
+# joblib.dump(model, 'saved-model.joblib')
+model.save('saved-model.h5')
