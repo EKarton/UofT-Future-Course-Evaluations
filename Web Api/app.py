@@ -59,8 +59,8 @@ def has_instructor_from_dept(dept, abbrev_instructor_name):
 def has_instructor(abbrev_instructor_name):
     key = abbrev_instructor_name
     
-    if key in abbrev_instructor_name:
-        return abbrev_instructor_name[key]
+    if key in abbrev_name_to_instructor:
+        return abbrev_name_to_instructor[key]
 
     return None
 
@@ -85,8 +85,38 @@ def get_fullname_from_abbreviation(course_code, abbrev_instructor_name):
 
     return None
 
-@app.route('/api/evals', methods=['GET'])
+@app.route('/api/evals/future', methods=['GET'])
 def get_future_evals():
+    course = request.args.get('course')
+    instructor = None
+    
+    if 'instructor' in request.args:
+        instructor = request.args.get('instructor')
+
+    elif 'abbrev_instructor' in request.args:
+        abbrev_instructor = request.args.get('abbrev_instructor')
+        instructor = get_fullname_from_abbreviation(course, abbrev_instructor)
+
+        if instructor is None:
+            return 'Abbreviated name ' + abbrev_instructor + ' cannot be known', 400
+
+    else:
+        return 'Must have \'instructor\' or \'abbrev_instructor\' in query string', 400
+
+    if course is None:
+        return 'Course ' + course + ' must be known', 400
+    
+    if instructor is None:
+        return 'Instructor ' + instructor + ' must be known', 400
+
+    try:
+        ratings = make_prediction(course, instructor)[0].tolist()
+        return jsonify(results), 200
+    finally:
+        return 'Rating with course ' + course + ' with instructor ' + instructor + ' cannot be determined', 400
+
+@app.route('/api/bulk/evals/future', methods=['GET'])
+def get_future_evalsin_bulk():
     courses = request.args.get('courses').split(',')
     instructors = []
 
