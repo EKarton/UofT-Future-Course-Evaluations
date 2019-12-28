@@ -81,7 +81,7 @@ def regroup_instructors_name(df):
         lastname = lastname.strip()
 
         if len(firstname) > 0 and len(lastname) > 0:
-            return lastname + ', ' + firstname[0] + '.'
+            return lastname + ' ' + firstname[0]
 
         return ''
 
