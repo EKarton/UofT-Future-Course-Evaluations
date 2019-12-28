@@ -1,7 +1,8 @@
 '''
-    Experiment #1:
+    Experiment #3:
     - Data Pre-processing:
-      a) Combine first and last name of instructors
+      a) Combine the first letter of instructor's first and his/her last name in this format:
+         <last-name>, <first-letter-of-first-name>.
       b) Parse out the course code from courses
       c) Remove any record with N/A value(s) in its ratings
       d) Perform one-hot encoding on courses
@@ -15,10 +16,13 @@
       d) Use MSE as loss function
 
     - Results:
-      a) Train Accuracy: 0.6354
-      b) Train Loss: 0.0175
-      c) Test Accuracy: 0.63535994
-      c) Test Loss: 0.017682702587548647
+      a) Train Accuracy: 0.5352
+      b) Train Loss: 0.0318
+      c) Test Accuracy: 0.53518325
+      c) Test Loss: 0.03175409284022583
+
+      Number of features: 3493
+      Number of output: 9
 '''
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -35,7 +39,7 @@ import pandas as pd
 
 def get_data():
     # Read in data from the csv file file
-    raw_data = pd.read_csv('evaluations.csv')
+    raw_data = pd.read_csv('clean-data.csv')
 
     # Perform one hot encoding on the course and instructor column
     input_encoder = OneHotEncoder()
@@ -83,7 +87,7 @@ def make_predictions(model, input_encoder, output_scaler, course_code, instructo
 X_train, X_test, y_train, y_test, input_encoder, output_scaler = get_data()
 model = get_model(X_train, X_test, y_train, y_test)
 
-make_predictions(model, input_encoder, output_scaler, 'CSC324H1', 'David Liu')
-make_predictions(model, input_encoder, output_scaler, 'CSC207H1', 'David Liu')
-make_predictions(model, input_encoder, output_scaler, 'CSC148H1', 'Daniela Rosu')
+make_predictions(model, input_encoder, output_scaler, 'CSC324H1', '\"Liu, D.\"')
+make_predictions(model, input_encoder, output_scaler, 'CSC207H1', '\"Liu, D.\"')
+make_predictions(model, input_encoder, output_scaler, 'CSC148H1', '\"Rosu, D.\"')
 

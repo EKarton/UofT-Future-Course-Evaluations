@@ -21,10 +21,20 @@ def make_prediction(course_code, instructor):
     prediction = model.predict(new_input)
     return output_scaler.inverse_transform(prediction)
 
+'''
+    New problem: Given CSC324H1 and Liu, D. it should output the ratings for CSC324H1 and David Liu.
+    Idea: Make a table for "David Liu" to "Liu, D". 
+'''
+
 @app.route('/api/evals', methods=['GET'])
 def get_future_evals():
     courses = request.args.get('courses').split(',')
     instructors = request.args.get('instructors').split(',')
+
+    if len(instructors) == 0:
+        first_name_instructors = request.args.get('abbrev_first_name_instructors').split(',')
+        last_name_instructors = request.args.get('last_name_instructors').split(',')
+
     print(courses)
     print(instructors)
 
@@ -50,6 +60,12 @@ def get_future_evals():
                 'cat7': ratings[6],
                 'cat8': ratings[7],
                 'cat9': ratings[8]
+            },
+
+            # If the course was taught before, show the ratings of all ratings with that course
+            # Else show the rating of all courses taught by this instructor
+            'past-ratings': {
+
             }
         }
 
