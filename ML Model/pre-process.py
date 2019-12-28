@@ -54,130 +54,47 @@ def parse_course_codes(df):
     # Take only records with course codes
     return temp.filter(col("course") != "N/A")
 
+# Get the department (not use the default dept from the data since it is wrong)
+def parse_dept(df):
+    def get_dept_from_course_code(course_code):
+        return course_code[:3]
+
+    get_dept_from_course_code_udf = udf(get_dept_from_course_code)
+    df = df.withColumn('dept', get_dept_from_course_code_udf(df.course))
+
+    return df
+
 # Make the instructors col and remove the firstname and lastname column
 def regroup_instructors_name(df):
-    # Trim the endpoints of the first and last name
-    mydata4 = df\
-        .withColumn("firstname", trim(col("firstname")))\
-        .withColumn("lastname", trim(col("lastname")))
 
-    # Take only records with first and last name
-    mydata4 = mydata4.filter((col("firstname") != "") & (col("lastname") != ""))
+    def get_instructor_name(firstname, lastname):
+        firstname = firstname.strip()
+        lastname = lastname.strip()
 
-    # Concatenate the first and last name
-    mydata5 = mydata4.withColumn("firstname", concat(col("firstname"), lit(" "), col("lastname")))
+        if len(firstname) > 0 and len(lastname) > 0:
+            return firstname + ' ' + lastname
 
-    # Rename the firstname column to instructors
-    mydata6 = mydata5.withColumnRenamed("firstname", "instructor")
+        return ''
 
-    # Drop the "lastname" column
-    return mydata6.drop("lastname")
+    def get_abbrev_instructor_name(firstname, lastname):
+        firstname = firstname.strip()
+        lastname = lastname.strip()
 
-# Group those with the same course, instructor, term, and year
-def combine_similar_sessions(df):
-    ConcatenatedScores = StructType([
-        StructField("cat1", StringType(), True),
-        StructField("cat2", StringType(), True),
-        StructField("cat3", StringType(), True),
-        StructField("cat4", StringType(), True),
-        StructField("cat5", StringType(), True),
-        StructField("cat6", StringType(), True),
-        StructField("cat7", StringType(), True),
-        StructField("cat8", StringType(), True),
-        StructField("cat9", StringType(), True),
-        StructField("num_invited", StringType(), True),
-        StructField("num_responded", StringType(), True)])
+        if len(firstname) > 0 and len(lastname) > 0:
+            return lastname + ', ' + firstname[0] + '.'
 
-    def safely_get_sum(multi_vals):
-        total = 0
-        for val in multi_vals:
-            if is_float(val):
-                total += float(val)
-        return total
+        return ''
 
-    def safely_get_weighted_avg(multi_ratings, multi_invited):
-        # Compute the total
-        total = safely_get_sum(multi_invited)
+    get_instructor_name_udf = udf(get_instructor_name)
+    get_abbrev_instructor_name_udf = udf(get_abbrev_instructor_name)
 
-        # Return the weighted average
-        weighted_avg = 0
-        for i in range(len(multi_ratings)):
-            rating = multi_ratings[i]
-            num_invited = multi_invited[i]
+    df = df.withColumn('abbrev_instructor', get_abbrev_instructor_name_udf(df.firstname, df.lastname))
+    df = df.withColumn('instructor', get_instructor_name_udf(df.firstname, df.lastname))
 
-            if is_float(rating) and is_float(num_invited):
-                weighted_avg = float(rating) * (float(num_invited) / total)
+    # Drop the lastname and firstname column
+    df = df.drop('firstname').drop('lastname')
 
-        return weighted_avg
-
-    def concatenate_rows(cat1s, cat2s, cat3s, cat4s, cat5s, cat6s, cat7s, cat8s, cat9s, numInviteds, numRespondeds):
-        total_invited = safely_get_sum(numInviteds)
-        total_respondends = safely_get_sum(numRespondeds)
-
-        total_cat_1 = safely_get_weighted_avg(cat1s, numInviteds)
-        total_cat_2 = safely_get_weighted_avg(cat2s, numInviteds)
-        total_cat_3 = safely_get_weighted_avg(cat3s, numInviteds)
-        total_cat_4 = safely_get_weighted_avg(cat4s, numInviteds)
-        total_cat_5 = safely_get_weighted_avg(cat5s, numInviteds)
-        total_cat_6 = safely_get_weighted_avg(cat6s, numInviteds)
-        total_cat_7 = safely_get_weighted_avg(cat7s, numInviteds)
-        total_cat_8 = safely_get_weighted_avg(cat8s, numInviteds)
-        total_cat_9 = safely_get_weighted_avg(cat9s, numInviteds)
-
-        return (total_cat_1, total_cat_2, total_cat_3, total_cat_4, total_cat_5, total_cat_6, total_cat_7, total_cat_8, total_cat_9, total_invited, total_respondends)
-
-    concatenate_rows_udf = udf(concatenate_rows, ConcatenatedScores)
-
-    columns_to_aggregate = [collect_list(col) for col in ["cat1", "cat2", "cat3", "cat4", "cat5", "cat6", "cat7", "cat8", "cat9", "num_invited", "num_responded"]]
-
-    # Combine the records that has the same course code, instructor, year, and term; and compute their weighted category ratings
-    aggregated_data = df\
-        .groupBy(df.course, df.instructor, df.year, df.term)\
-        .agg(concatenate_rows_udf(*columns_to_aggregate).alias('values'))
-
-    # Expand the "values" column to the column names in ConcatenatedScores 
-    return aggregated_data.select('course', 'instructor', 'term', 'year', 'values.*')
-
-# Uses the num_invities to explode the number of items
-def explode_num_respondends(df):
-    def explode_num_to_array(x):
-        if is_float(x):
-            x_int = int(float(x))
-            return [1] * x_int
-        else:
-            return [1]
-
-    n_to_array = udf(explode_num_to_array, ArrayType(IntegerType()))
-    mydata1 = df.withColumn('num_responded', n_to_array(df.num_responded))
-
-    mydata2 = mydata1.select('course', 'instructor', 'term', 'year', "cat1", "cat2", "cat3", "cat4", "cat5", "cat6", "cat7", "cat8", "cat9", explode(mydata1.num_responded))
-
-    mydata3 = mydata2.drop('col')
-
-    return mydata3
-
-# Perform one hot encoding on courses and instructors
-def encode_courses_and_instructors(df):
-    course_string_indexer = StringIndexer(inputCol="course", outputCol="course_index")
-    instructor_string_indexer = StringIndexer(inputCol="instructor", outputCol="instructor_index")
-
-    encoder = OneHotEncoderEstimator(inputCols=["course_index", "instructor_index"],
-                                     outputCols=["course_vec", "instructor_vec"])
-    encoder.setDropLast(False)
-
-    pipeline = Pipeline(stages=[course_string_indexer, instructor_string_indexer])
-
-    indexed_data = pipeline.fit(df).transform(df)
-
-    # Make a table mapping course index and course name
-    courses_table = indexed_data.select('course_index', 'course').distinct()
-
-    # Make a table mapping instructor index and instructor name
-    instructors_table = indexed_data.select('instructor_index', 'instructor').distinct()
-
-    indexed_data = indexed_data.select('course_index', 'instructor_index', 'term', 'year', "cat1", "cat2", "cat3", "cat4", "cat5", "cat6", "cat7", "cat8", "cat9", "num_invited", "num_responded")
-
-    return indexed_data, courses_table, instructors_table
+    return df
 
 # Remove rows with null values
 def remove_all_null_values(df):
@@ -228,8 +145,19 @@ if __name__ == "__main__":
         .filter(raw_data.year != "N/A")
 
     mydata2 = parse_course_codes(mydata)
-    mydata3 = mydata2.drop("dept").drop("division")
-    mydata7 = regroup_instructors_name(mydata3)
+    mydata3 = parse_dept(mydata2)
+    mydata4 = mydata3.drop('division')
+    mydata7 = regroup_instructors_name(mydata4)
     mydata8 = remove_all_null_values(mydata7)
 
-    mydata8.repartition(1).write.format("csv").option("header", "true").save('clean-data')
+    # instructor_name_mappings = get_abbrev_instructor_name_mappings(mydata8)
+
+    # Dump the csv file just for the ML model
+    mydata8 \
+        .select('course', 'instructor', 'cat1', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat9') \
+        .repartition(1).write.format("csv").option("header", "true").save('clean-data')
+
+    # Dump the csv file just for the instructors mapping
+    mydata8 \
+        .select('dept', 'course', 'instructor', 'abbrev_instructor') \
+        .repartition(1).write.format("csv").option("header", "true").save('instructor-name-mappings')
