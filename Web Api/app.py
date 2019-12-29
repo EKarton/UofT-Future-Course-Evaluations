@@ -111,8 +111,8 @@ def get_future_evals():
 
     try:
         ratings = make_prediction(course, instructor)[0].tolist()
-        return jsonify(results), 200
-    finally:
+        return jsonify(ratings), 200
+    except:
         return 'Rating with course ' + course + ' with instructor ' + instructor + ' cannot be determined', 400
 
 @app.route('/api/bulk/evals/future', methods=['GET'])
