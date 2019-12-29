@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "Modify CSS and HTML",
+    "name": "Course ratings on UofT Timetable",
     "version": "0.1.0",
-    "description": "Lateral blog post demo extension",
+    "description": "Display predicted course ratings on the UofT Timetable",
     "content_scripts": [
         {
             "css": [

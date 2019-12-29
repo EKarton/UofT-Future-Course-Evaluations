@@ -1,17 +1,21 @@
 const COURSE_CODE_REGEX = /[A-Z][A-Z][A-Z]\d\d\d[A-Z]\d/g;
+const EVALS_WEB_API_BASE_URL = 'http://0.0.0.0:5000/api/evals/future';
 
+// TODO: Refactor this to handle bulk.
+// Do something that is similar to CSC458: send the first request with courseCode and instructorName
+// As it is being sent, any new requests will be queued.
+// Then, once it is done, it will send all those that are queued in the next request.
+var queuedRequests = [];
 function getRatings(courseCode, abbrevInstructorName) {
     return new Promise(async (resolve, reject) => {
         let urlEncodedName = encodeURI(abbrevInstructorName);
-        let baseUrl = 'http://0.0.0.0:5000/api/evals/future'
-        let url = `${baseUrl}?course=${courseCode}&abbrev_instructor=${urlEncodedName}`;
+        let url = `${EVALS_WEB_API_BASE_URL}?course=${courseCode}&abbrev_instructor=${urlEncodedName}`;
         
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                // JSON.parse does not evaluate the attacker's scripts.
                 let resp = JSON.parse(xhr.responseText);
                 resolve(resp);
             }
@@ -77,11 +81,43 @@ function addCssFile() {
     document.getElementsByTagName("head")[0].appendChild(link);
 }
 
+function addRatingsControl() {
+    // TODO: DOES NOT WORK!
+    // let html = `
+    // <div class="form-group filterBreadth" tabindex="0">
+    //     <div id="tipBreadth" role="tooltip">Specify the course ratings to display</div>
+    //     <label for="breadth" class="control-label">Course Ratings</label>
+    //     <select id="breadth" multiple="multiple" class="form-control selectized" aria-describedby="tipBreadth" tabindex="-1" style="display: none;"></select>
+    //     <div class="selectize-control form-control multi plugin-remove_button">
+    //         <div class="selectize-input items not-full has-options">
+    //             <input type="text" autocomplete="off" tabindex="" aria-labelledby="tipBreadth" aria-describedby="tipBreadth" style="width: 4px; opacity: 1; position: relative; left: 0px;"></div><div class="selectize-dropdown multi form-control plugin-remove_button" style="display: none; visibility: visible; width: 826px; top: 48px; left: 0px;">
+
+    //             <div class="selectize-dropdown-content">
+    //                 <div data-value="1" data-selectable="" class="option">Course intellectually stimulating (1)</div>
+    //                 <div data-value="2" data-selectable="" class="option">Provided deeper understanding of the subject matter (2)</div>
+    //                 <div data-value="3" data-selectable="" class="option">Learning Atmosphere (3)</div>
+    //                 <div data-value="4" data-selectable="" class="option">Improved understanding of course content (4)</div>
+    //                 <div data-value="5" data-selectable="" class="option">Fairness in test material (5)</div>
+    //                 <div data-value="6" data-selectable="" class="option">Quality of learning experience (6)</div>
+    //                 <div data-value="7" data-selectable="" class="option">Instructor generated enthusiasm (7)</div>
+    //                 <div data-value="8" data-selectable="" class="option">Course Workload (8)</div>
+    //                 <div data-value="9" data-selectable="" class="option">Course Recommendation (9)</div>
+    //             </div>
+    //         </div>
+    //     </div>
+    //     <div class="helper">
+    //         Specify course ratings to display
+    //     </div>
+    // </div>
+    // `;
+
+    // document.querySelector('.secondary') .insertAdjacentHTML('beforeend', html);
+}
+
 window.onload = function () {
-    // do the work after everything was loaded (DOM, media elements)
-    console.log('loaded')
+    addRatingsControl();
     addCssFile();
-    console.log("loaded css file");
+
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
     // select the target node
@@ -103,8 +139,6 @@ window.onload = function () {
             courseRatingSpan.className += 'course-level-ratings';
             courseTitleTd.appendChild(courseRatingSpan);
             
-            // console.log(courseCode);
-
             var maxRating = -1;
 
             // Going through all the instructors
@@ -141,8 +175,6 @@ window.onload = function () {
                     });
                 });
             });
-
-            // Show the ratings for the overall course
         });
     });
 
@@ -155,5 +187,3 @@ window.onload = function () {
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
 };
-
-console.log('hehe')
