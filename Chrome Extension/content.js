@@ -1,26 +1,23 @@
 const COURSE_CODE_REGEX = /[A-Z][A-Z][A-Z]\d\d\d[A-Z]\d/g;
 const EVALS_WEB_API_BASE_URL = 'http://0.0.0.0:5000/api/evals/future';
 
-// TODO: Refactor this to handle bulk.
-// Do something that is similar to CSC458: send the first request with courseCode and instructorName
-// As it is being sent, any new requests will be queued.
-// Then, once it is done, it will send all those that are queued in the next request.
-var queuedRequests = [];
+var globalSelectedRating = 8;
+
 function getRatings(courseCode, abbrevInstructorName) {
     return new Promise(async (resolve, reject) => {
         let urlEncodedName = encodeURI(abbrevInstructorName);
         let url = `${EVALS_WEB_API_BASE_URL}?course=${courseCode}&abbrev_instructor=${urlEncodedName}`;
-        
+
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
 
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 let resp = JSON.parse(xhr.responseText);
                 resolve(resp);
             }
         }
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             reject();
         }
 
@@ -51,6 +48,7 @@ function getRatingElements(rating) {
 
 function makeRatings(rating) {
     let newNode = document.createElement('span');
+    newNode.className += ' ratings';
     let ratingElements = getRatingElements(rating);
     for (let i = 0; i < ratingElements.length; i++) {
         newNode.appendChild(ratingElements[i]);
@@ -68,9 +66,112 @@ function updateRatings(rootElement, rating) {
 
     // Add back the fa-star elements
     let ratingElements = getRatingElements(rating);
+    rootElement.className += ' ratings';
     for (let i = 0; i < ratingElements.length; i++) {
         rootElement.appendChild(ratingElements[i]);
     }
+}
+
+function setRatingsOnHtmlElement(htmlElement, ratings) {
+    htmlElement.setAttribute('data-ratings', ratings);
+}
+
+function getRatingsOnHtmlElement(htmlElement) {
+    let rawAttribute = htmlElement.getAttribute('data-ratings');
+
+    let attributes = null;
+    if (rawAttribute) {
+        attributes = rawAttribute.split(',').map(item => parseFloat(item));
+    }
+    return attributes;
+}
+
+function arrayMax(arr1, arr2) {
+    if (arr1.length != arr2.length) {
+        throw Error('array lengths dont match!');
+    }
+
+    let newArray = [];
+    for (let i = 0; i < arr1.length; i++) {
+        newArray.push(Math.max(arr1[i], arr2[i]));
+    }
+
+    return newArray;
+}
+
+function updateRatingsOnAllCourses() {
+    // Delete all existing ratings
+    document.querySelectorAll('.ratings').forEach(item => item.parentElement.removeChild(item));
+
+    // Going through all the courses
+    let courseDivs = document.querySelectorAll('.courseResults');
+    courseDivs.forEach(courseDiv => {
+        let courseTitleTd = courseDiv.querySelector('.courseTitle');
+        let courseCodeSpan = courseTitleTd.querySelector('.hiCC');
+        let courseCode = courseCodeSpan.textContent.match(COURSE_CODE_REGEX);
+
+        // Create a blank course ratings span
+        let courseRatingSpan = document.createElement('span');
+        courseRatingSpan.className += 'course-level-ratings';
+        courseTitleTd.appendChild(courseRatingSpan);
+
+        var courseRatings = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+
+        // Going through all the instructors
+        let instructorsTds = courseDiv.querySelectorAll('.colInst');
+        // console.log('instructorsTds.length:' + instructorsTds.length);
+        instructorsTds.forEach((instructorsTd, instructorsTdIndex) => {
+            let instructorsLi = instructorsTd.getElementsByTagName('li');
+
+            // console.log('instructorsTdIndex:' + instructorsTdIndex);
+            // console.log('instructorsLi.length:' + instructorsLi.length);
+
+            Array.from(instructorsLi).forEach((instructorLi, instructorLiIndex) => {
+                let rawAbbrevInstructor = instructorLi.textContent;
+
+                let tokenizedName = rawAbbrevInstructor.split(',');
+                let lastName = tokenizedName[0]
+                let firstNameInitials = tokenizedName[1].substring(1, tokenizedName[1].length - 1);
+                let abbrevInstructor = `${lastName} ${firstNameInitials}`;
+
+                let existingRating = getRatingsOnHtmlElement(instructorLi);
+                if (existingRating != null) {
+
+                    nextCourseRatings = arrayMax(existingRating, courseRatings)
+        
+                    if (nextCourseRatings != courseRatings) {
+                        courseRatings = nextCourseRatings;
+                        updateRatings(courseRatingSpan, courseRatings[globalSelectedRating]);
+                        setRatingsOnHtmlElement(courseDiv, courseRatings);
+                    }
+
+                    let newNode = document.createElement('div');
+                    newNode.appendChild(makeRatings(existingRating[globalSelectedRating]));
+                    instructorLi.appendChild(newNode);
+
+                } else {
+                    getRatings(courseCode, abbrevInstructor).then((ratings) => {
+
+                        nextCourseRatings = arrayMax(ratings, courseRatings)
+        
+                        if (nextCourseRatings != courseRatings) {
+                            courseRatings = nextCourseRatings;
+                            updateRatings(courseRatingSpan, courseRatings[globalSelectedRating]);
+                            setRatingsOnHtmlElement(courseDiv, courseRatings);
+                        }
+    
+                        setRatingsOnHtmlElement(instructorLi, ratings);
+                        let newNode = document.createElement('div');
+                        newNode.appendChild(makeRatings(ratings[globalSelectedRating]));
+                        instructorLi.appendChild(newNode);
+    
+                    }).catch(error => {
+                        // console.log(error);
+                    });
+                }
+            });
+        });
+    });
 }
 
 function addCssFile() {
@@ -81,109 +182,104 @@ function addCssFile() {
     document.getElementsByTagName("head")[0].appendChild(link);
 }
 
-function addRatingsControl() {
-    // TODO: DOES NOT WORK!
-    // let html = `
-    // <div class="form-group filterBreadth" tabindex="0">
-    //     <div id="tipBreadth" role="tooltip">Specify the course ratings to display</div>
-    //     <label for="breadth" class="control-label">Course Ratings</label>
-    //     <select id="breadth" multiple="multiple" class="form-control selectized" aria-describedby="tipBreadth" tabindex="-1" style="display: none;"></select>
-    //     <div class="selectize-control form-control multi plugin-remove_button">
-    //         <div class="selectize-input items not-full has-options">
-    //             <input type="text" autocomplete="off" tabindex="" aria-labelledby="tipBreadth" aria-describedby="tipBreadth" style="width: 4px; opacity: 1; position: relative; left: 0px;"></div><div class="selectize-dropdown multi form-control plugin-remove_button" style="display: none; visibility: visible; width: 826px; top: 48px; left: 0px;">
+var target = null;
+var observer = null
 
-    //             <div class="selectize-dropdown-content">
-    //                 <div data-value="1" data-selectable="" class="option">Course intellectually stimulating (1)</div>
-    //                 <div data-value="2" data-selectable="" class="option">Provided deeper understanding of the subject matter (2)</div>
-    //                 <div data-value="3" data-selectable="" class="option">Learning Atmosphere (3)</div>
-    //                 <div data-value="4" data-selectable="" class="option">Improved understanding of course content (4)</div>
-    //                 <div data-value="5" data-selectable="" class="option">Fairness in test material (5)</div>
-    //                 <div data-value="6" data-selectable="" class="option">Quality of learning experience (6)</div>
-    //                 <div data-value="7" data-selectable="" class="option">Instructor generated enthusiasm (7)</div>
-    //                 <div data-value="8" data-selectable="" class="option">Course Workload (8)</div>
-    //                 <div data-value="9" data-selectable="" class="option">Course Recommendation (9)</div>
-    //             </div>
-    //         </div>
-    //     </div>
-    //     <div class="helper">
-    //         Specify course ratings to display
-    //     </div>
-    // </div>
-    // `;
-
-    // document.querySelector('.secondary') .insertAdjacentHTML('beforeend', html);
-}
-
-window.onload = function () {
-    addRatingsControl();
-    addCssFile();
-
+function startObserving() {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
     // select the target node
-    var target = document.getElementById('courses');
+    target = document.getElementById('courses');
 
     // create an observer instance
-    var observer = new MutationObserver(function (mutations, observer) {
-        console.log(mutations, observer);
-
-        // Going through all the courses
-        let courseDivs = document.querySelectorAll('.perCourse');
-        courseDivs.forEach(courseDiv => {
-            let courseTitleTd = courseDiv.querySelector('.courseTitle');
-            let courseCodeSpan = courseTitleTd.querySelector('.hiCC');
-            let courseCode = courseCodeSpan.textContent.match(COURSE_CODE_REGEX);
-
-            // Create a blank course ratings span
-            let courseRatingSpan = document.createElement('span');
-            courseRatingSpan.className += 'course-level-ratings';
-            courseTitleTd.appendChild(courseRatingSpan);
-            
-            var maxRating = -1;
-
-            // Going through all the instructors
-            let instructorsTds = courseDiv.querySelectorAll('.colInst');
-            console.log('instructorsTds.length:' + instructorsTds.length);
-            instructorsTds.forEach((instructorsTd, instructorsTdIndex) => {
-                let instructorsLi = instructorsTd.getElementsByTagName('li');
-                
-                console.log('instructorsTdIndex:' + instructorsTdIndex);
-                console.log('instructorsLi.length:' + instructorsLi.length);
-
-                Array.from(instructorsLi).forEach((instructorLi, instructorLiIndex) => {
-                    let rawAbbrevInstructor = instructorLi.textContent;
-
-                    let tokenizedName = rawAbbrevInstructor.split(',');
-                    let lastName = tokenizedName[0]
-                    let firstNameInitials = tokenizedName[1].substring(1, tokenizedName[1].length - 1);
-                    let abbrevInstructor = `${lastName} ${firstNameInitials}`;
-
-                    getRatings(courseCode, abbrevInstructor).then((ratings) => {
-                        let concernedRating = ratings[8];
-                        
-                        if (concernedRating > maxRating) {
-                            maxRating = concernedRating;
-                            updateRatings(courseRatingSpan, maxRating);
-                        }
-
-                        let newNode = document.createElement('div');
-                        newNode.appendChild(makeRatings(concernedRating));
-                        instructorLi.appendChild(newNode);
-
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                });
-            });
-        });
+    observer = new MutationObserver(function (mutations, observer) {
+        // console.log(mutations, observer);
+        updateRatingsOnAllCourses();
     });
 
     // configuration of the observer:
-    var config = { 
+    var config = {
         childList: true,
-        characterData: true 
+        characterData: true
     };
 
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
+}
+
+function stopObserving() {
+    if (observer != null) {
+        observer.disconnect();
+    }
+}
+
+window.onload = function () {
+    addCssFile();
+    startObserving();
 };
+
+/**
+ * Sorts the ordering of courses based on ratings
+ * @param {Integer} selectedRatings The selected ratings (either -1, 0, 1, 2, ..., 8)
+ * @param {Integer} order The ordering of the courses (either -1, 0, or 1)
+ */
+function updateCourseRatings(selectedRatings, order) {
+    stopObserving();
+    var coursesDiv = document.getElementById("courses");
+
+    [].slice.call(coursesDiv.children)
+        .sort((courseA, courseB) => {
+
+            // If ratings determine the ordering
+            if (order == 0) {
+                return 1;
+
+            } else {
+                let courseARatings = getRatingsOnHtmlElement(courseA);
+                let courseBRatings = getRatingsOnHtmlElement(courseB);
+                console.log(courseA);
+                console.log(courseB);
+
+                if (courseARatings == null || courseBRatings == null) {
+                    return -1;
+                }
+                
+                let selectedCourseARating = courseARatings[selectedRatings];
+                let selectedCourseBRating = courseBRatings[selectedRatings];
+
+                if (selectedCourseARating == selectedCourseBRating) {
+                    return 0;
+                }
+
+                if (order == -1) {
+                    return selectedCourseARating < selectedCourseBRating ? -1 : 1;
+
+                } else if (order == 1) {
+                    return selectedCourseARating > selectedCourseBRating ? -1 : 1;
+
+                }
+            }
+        })
+        .map(node => coursesDiv.appendChild(node));
+    startObserving();
+    updateRatingsOnAllCourses();
+}
+
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        let operation = request.operation;
+        let selectedRating = request.selectedRating;
+        let order = request.order;
+
+        globalSelectedRating = selectedRating;
+
+        switch (operation) {
+            case "reorder-ratings":
+                updateCourseRatings(selectedRating, order);
+                sendResponse({ status: "ok" });
+                break;
+
+            default:
+                throw Error("Unknown operation:", operation);
+        }            
+    });

@@ -1,0 +1,32 @@
+<html>
+
+<head>
+    <title>Water Popup</title>
+</head>
+
+<body>
+    <p>Selected Course Rating:</p>
+    <select id="selected-rating-options">
+        <option value="-1">Don't show course ratings (0)</option>
+        <option value="0">Course intellectually stimulating (1)</option>
+        <option value="1">Provided deeper understanding of the subject matter (2)</option>
+        <option value="2">Engaging learning Atmosphere (3)</option>
+        <option value="3">Improved understanding of course content (4)</option>
+        <option value="4">Fairness in test material (5)</option>
+        <option value="5">Quality of learning experience (6)</option>
+        <option value="6">Instructor generated enthusiasm (7)</option>
+        <option value="7">Course Workload (8)</option>
+        <option value="8" selected="selected">Course Recommendation (9)</option>
+    </select>
+
+    <p>Order of Courses</p>
+    <select id="ordering-options">
+        <option value="-1">From least to greatest rated course</option>
+        <option value="0">Original ordering</option>
+        <option value="1">From greatest to least rated course</option>
+    </select>
+    <button id="view-different-ratings">Updated</button>
+    <script src="popup.js"></script>
+</body>
+
+</html>
