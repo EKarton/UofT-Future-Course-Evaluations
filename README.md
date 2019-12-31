@@ -61,6 +61,9 @@ Ensure that you have:
 2. Python 3
 3. Unix computer
 
+### Step 0: Install libraries
+1. In the root folder of the project, run ```pip3 install -r requirements.txt```
+
 ### Step 1: Scrapping course evaluations
 1. In the ```Data Scraper``` folder, copy the file ```.env-template```, and rename the copied file to ```.env```.
 2. Open the ```.env``` file and replace the contents to your Utorid and your Utorid password.
