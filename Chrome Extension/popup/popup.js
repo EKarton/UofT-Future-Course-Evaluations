@@ -11,16 +11,18 @@ function onUpdateButtonClick() {
         visibleRatings[index] = checkbox.checked;
     }
 
-    var message = { 
+    var message = {
         visibleRatings: visibleRatings,
         sortBy: parseInt(orderingOptions.options[orderingOptions.selectedIndex].value)
     };
 
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, message, function(response) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
             console.log(response);
         });
     });
 }
 
-document.getElementById('update-button').addEventListener('click', onUpdateButtonClick);
+document.body.onload = function () {
+    document.getElementById('update-button').addEventListener('click', onUpdateButtonClick);
+}
