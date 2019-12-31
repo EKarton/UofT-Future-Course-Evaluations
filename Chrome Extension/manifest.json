@@ -23,8 +23,5 @@
     ],
     "web_accessible_resources": [
         "images/spinner.gif"
-    ],
-    "permissions": [
-        "activeTab"
     ]
 }
