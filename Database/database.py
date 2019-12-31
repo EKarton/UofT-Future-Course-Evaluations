@@ -44,3 +44,21 @@ class Database():
         cursor.close()
 
         self.connection.commit()
+
+    def execute_sql(self, sql_script, values):
+        print(self.connection)
+        cursor = self.connection.cursor()
+        cursor.execute(sql_script, values)
+
+        cursor_results = cursor.fetchall()
+
+        records = []
+        for record in cursor_results:
+            records.append(record)
+
+        cursor.close()
+        return records
+
+
+
+        

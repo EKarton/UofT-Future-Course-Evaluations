@@ -50,3 +50,22 @@ class InstructorsTable(Database):
 
         cursor.close()
         return instructor_id
+
+    def get_instructor_details(self, instructor_id):
+        sql = """SELECT full_instructor_name, abbrev_instructor_name
+                        FROM instructors 
+                        WHERE instructor_id = %s;"""
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql, (instructor_id, ))
+
+        result = None
+        row = cursor.fetchone()
+        if row is not None and len(row) == 1:
+            full_instructor_name = row[0]
+            abbrev_instructor_name = row[1]
+
+            result = (full_instructor_name, abbrev_instructor_name)
+
+        cursor.close()
+        return result

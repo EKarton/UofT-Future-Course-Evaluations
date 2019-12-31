@@ -1,3 +1,5 @@
+
+# ML libraries
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import tensorflow as tf
@@ -5,20 +7,24 @@ from tensorflow import keras
 
 import numpy as np
 
+# Database libraries
+import sys
+sys.path.append('../Database')
+from instructors_table import InstructorsTable
+
+# Web app libraries
 from flask import Flask, request, redirect, url_for, flash, jsonify
 import pickle as p
 import json
 
-import csv
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 model = None
 input_encoder = None
 output_scaler = None
-
-course_code_and_abbrev_name_to_instructor = {}
-dept_abbrev_name_to_instructor = {}
-abbrev_name_to_instructor = {}
+instructors_table = None
 
 def make_prediction(course_code, instructor):
     new_input = np.array([[course_code, instructor]])
@@ -27,47 +33,49 @@ def make_prediction(course_code, instructor):
     prediction = model.predict(new_input)
     return output_scaler.inverse_transform(prediction)
 
-def populate_dictionaries():
-    with open('instructor-names-mapping.csv') as csv_file:
-        csv_reader = csv.DictReader(csv_file, delimiter=',')
-        for row in csv_reader:
-            dept = row['dept']
-            course = row['course']
-            instructor = row['instructor']
-            abbrev_instructor = row['abbrev_instructor']
-
-            course_code_and_abbrev_name_to_instructor[course + '|' + abbrev_instructor] = instructor
-            dept_abbrev_name_to_instructor[dept + '|' + abbrev_instructor] = instructor
-            abbrev_name_to_instructor[abbrev_instructor] = instructor
-
 def has_instructor_from_course(course_code, abbrev_instructor_name):
-    key = course_code + '|' + abbrev_instructor_name
+    sql = """SELECT DISTINCT instructors.full_instructor_name
+             FROM instructors JOIN evaluations ON instructors.instructor_id = evaluations.instructor_id
+             WHERE evaluations.course_id = (
+                 SELECT course_id
+                 FROM courses
+                 WHERE courses.course_code = %s
+             )
+             AND instructors.abbrev_instructor_name = %s; """
 
-    if key in course_code_and_abbrev_name_to_instructor:
-        return course_code_and_abbrev_name_to_instructor[key]
+    results = instructors_table.execute_sql(sql, (course_code, abbrev_instructor_name))
 
+    if len(results) > 0:
+        return results[0][0]
     return None
 
 def has_instructor_from_dept(dept, abbrev_instructor_name):
-    key = dept + '|' + abbrev_instructor_name
-    
-    if key in dept_abbrev_name_to_instructor:
-        return dept_abbrev_name_to_instructor[key]
+    sql = """SELECT DISTINCT instructors.full_instructor_name
+             FROM instructors JOIN evaluations ON instructors.instructor_id = evaluations.instructor_id
+             WHERE evaluations.dept_id = (
+                SELECT dept_id
+                FROM depts
+                WHERE depts.dept_code = %s
+             )
+             AND instructors.abbrev_instructor_name = %s; """
 
+    results = instructors_table.execute_sql(sql, (dept, abbrev_instructor_name))
+
+    if len(results) > 0:
+        return results[0][0]
     return None
 
 def has_instructor(abbrev_instructor_name):
-    key = abbrev_instructor_name
-    
-    if key in abbrev_name_to_instructor:
-        return abbrev_name_to_instructor[key]
+    sql = """SELECT DISTINCT instructors.full_instructor_name
+             FROM instructors 
+             WHERE instructors.abbrev_instructor_name = %s; """
 
+    results = instructors_table.execute_sql(sql, (abbrev_instructor_name, ))
+
+    if len(results) > 0:
+        return results[0][0]
     return None
 
-'''
-    New problem: Given CSC324H1 and Liu, D. it should output the ratings for CSC324H1 and David Liu.
-    Idea: Make a table for "David Liu" to "Liu, D". 
-'''
 def get_fullname_from_abbreviation(course_code, abbrev_instructor_name):
     dept = course_code[0:3]
 
@@ -145,8 +153,6 @@ def get_future_evalsin_bulk():
         instructor = instructors[i]
         ratings = make_prediction(course, instructor)[0].tolist()
 
-        print(ratings)
-
         result = {
             'course': course,
             'instructor': instructor,
@@ -174,15 +180,25 @@ def get_future_evalsin_bulk():
     return jsonify(results)
 
 if __name__ == '__main__':
-    modelfile = 'saved-model.h5'
+    # Load credentials from the .env file
+    load_dotenv()
+
+    # Load the DB
+    host = os.getenv("HOST")
+    db_name = os.getenv("DATABASE_NAME")
+    user = os.getenv("USER")
+    password = os.getenv("PASSWORD")
+    instructors_table = InstructorsTable(host, db_name, user, password)
+    instructors_table.start()
+
+    # Load the ML model
+    modelfile = '../ML Model/saved-model.h5'
     model = keras.models.load_model(modelfile)
 
-    input_encoder_file = 'saved-input-encoder.pkl'
+    input_encoder_file = '../ML Model/saved-input-encoder.pkl'
     input_encoder = p.load(open(input_encoder_file, 'rb'))
 
-    output_scaler_file = 'saved-output-scalar.pkl'
+    output_scaler_file = '../ML Model/saved-output-scalar.pkl'
     output_scaler = p.load(open(output_scaler_file, 'rb'))
-
-    populate_dictionaries()
 
     app.run(debug=True, host='0.0.0.0')
