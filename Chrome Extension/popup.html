@@ -2,31 +2,206 @@
 
 <head>
     <title>Water Popup</title>
+    <link rel="stylesheet" href="materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="dropdown.css">
+    <style>
+        body {
+            width: 400px;
+            padding: 20px;
+        }
+
+        #logo-container {
+            display: inline-block;
+        }
+
+        #logo {
+            float: left;
+        }
+
+        #logo-text {
+            margin: 0;
+        }
+
+        #logo-caption {
+            text-align: center;
+        }
+
+        #update-button {
+            float: right;
+        }
+
+        #ordering-options-text {
+            /* float: left; */
+            margin: 0;
+            padding: 0;
+            margin-top: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            margin-left: 0px;
+        }
+
+        #ordering-options-container {
+            display: inline-block;
+        }
+    </style>
+
+    <!-- <style>
+        body {
+            margin: 20px;
+        }
+
+        #logo-container {
+            display: inline-block;
+        }
+
+        #logo {
+            float: left;
+        }
+
+        #logo-text {
+            margin: 0;
+        }
+
+        #logo-caption {
+            text-align: center;
+        }
+
+        #course-rating-choices {
+            font-size: 14px;
+        }
+
+        .rating-checkbox {
+            margin-right: 10px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        #update-button {
+            float: right;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+
+            color: #fff;
+            background-color: #1890ff;
+            border-color: #1890ff;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+            -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+
+            line-height: 1.499;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            background-image: none;
+            border: 1px solid transparent;
+
+            touch-action: manipulation;
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 4px;
+
+            margin-top: 20px;
+        } -->
+    </style>
 </head>
 
 <body>
-    <p>Selected Course Rating:</p>
-    <select id="selected-rating-options">
-        <option value="-1">Don't show course ratings (0)</option>
-        <option value="0">Course intellectually stimulating (1)</option>
-        <option value="1">Provided deeper understanding of the subject matter (2)</option>
-        <option value="2">Engaging learning Atmosphere (3)</option>
-        <option value="3">Improved understanding of course content (4)</option>
-        <option value="4">Fairness in test material (5)</option>
-        <option value="5">Quality of learning experience (6)</option>
-        <option value="6">Instructor generated enthusiasm (7)</option>
-        <option value="7">Course Workload (8)</option>
-        <option value="8" selected="selected">Course Recommendation (9)</option>
-    </select>
+    <div id="logo-container">
+        <img id="logo" src="images/logo.png" width="42" />
+        <h5 id="logo-text">UofT Future Course Evaluations</h5>
+    </div>
 
-    <p>Order of Courses</p>
-    <select id="ordering-options">
-        <option value="-1">From least to greatest rated course</option>
-        <option value="0">Original ordering</option>
-        <option value="1">From greatest to least rated course</option>
-    </select>
-    <button id="view-different-ratings">Updated</button>
+    <!-- Sort by options -->
+    <div>
+        <h6 id="ordering-options-text">Sort by:</h6>
+        <div id="ordering-options-container" class="custom-select" style="width:300px;">
+            <select id="ordering-options">
+                <option value="-1">None (0)</option>
+                <option value="0">Course intellectually stimulating (1)</option>
+                <option value="1">Provided deeper understanding of the subject matter (2)</option>
+                <option value="2">Engaging learning Atmosphere (3)</option>
+                <option value="3">Improved understanding of course content (4)</option>
+                <option value="4">Fairness in test material (5)</option>
+                <option value="5">Quality of learning experience (6)</option>
+                <option value="6">Instructor generated enthusiasm (7)</option>
+                <option value="7">Course Workload (8)</option>
+                <option value="8">Course Recommendation (9)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Course ratings toggle -->
+    <div>
+        <h6>View course rating:</h6>
+        <div id="course-rating-choices">
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="0" class="filled-in" checked="checked" />
+                    <span>Course intellectually stimulating (1)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="1" class="filled-in" checked="checked" />
+                    <span>Gave me useful knowledge (2)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="2" class="filled-in" />
+                    <span>Engaging learning atmosphere (3)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="3" class="filled-in" />
+                    <span>Improved understanding of course content (4)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="4" class="filled-in" />
+                    <span>Fairness in test material (5)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="5" class="filled-in" />
+                    <span>Quality of learning experience (6)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="6" class="filled-in" />
+                    <span>Instructor generated enthusiasm (7)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="7" class="filled-in" checked="checked" />
+                    <span>Course Workload (8)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input class="course-rating-checkbox" type="checkbox" value="8" class="filled-in" checked="checked" />
+                    <span>Course Recommendation (9)</span>
+                </label>
+            </p>
+        </div>
+    </div>
+
+    <!-- The update button-->
+    <a id="update-button" class="waves-effect waves-light btn">Update</a>
+
+
     <script src="popup.js"></script>
+    <script src="materialize/js/materialize.min.js"></script>
+    <script src="dropdown.js"></script>
 </body>
 
 </html>

@@ -3,6 +3,28 @@
     color: orange;
 }
 
-.course-level-ratings {
-    float: right;
+.spinner-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: table;
+}
+
+.spinner {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/spinner.gif');
+    width: 25px;
+    height: 25px;
+    background-size: 25px 25px;
+    display: inline-block;
+}
+
+.spinner-text {
+    font-size: medium;
+    margin: 0px;
+    padding-left: 20px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.rating-text {
+    font-size: medium;
 }

@@ -1,13 +1,19 @@
 'use strict';
 
 function onUpdateButtonClick() {
-    let selectedRatingOptions = document.getElementById('selected-rating-options');
+    let viewRatingCheckboxes = document.querySelectorAll('.course-rating-checkbox');
     let orderingOptions = document.getElementById('ordering-options');
 
+    let visibleRatings = [false, false, false, false, false, false, false, false, false];
+    for (let i = 0; i < viewRatingCheckboxes.length; i++) {
+        let checkbox = viewRatingCheckboxes[i];
+        let index = parseInt(checkbox.getAttribute('value'));
+        visibleRatings[index] = checkbox.checked;
+    }
+
     var message = { 
-        operation: "reorder-ratings", 
-        selectedRating: parseInt(selectedRatingOptions.options[selectedRatingOptions.selectedIndex].value),
-        order: parseInt(orderingOptions.options[orderingOptions.selectedIndex].value)
+        visibleRatings: visibleRatings,
+        sortBy: parseInt(orderingOptions.options[orderingOptions.selectedIndex].value)
     };
 
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -17,4 +23,4 @@ function onUpdateButtonClick() {
     });
 }
 
-document.getElementById('view-different-ratings').addEventListener('click', onUpdateButtonClick);
+document.getElementById('update-button').addEventListener('click', onUpdateButtonClick);

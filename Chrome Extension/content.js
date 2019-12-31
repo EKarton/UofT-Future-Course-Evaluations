@@ -1,26 +1,48 @@
+'use strict';
+
 const COURSE_CODE_REGEX = /[A-Z][A-Z][A-Z]\d\d\d[A-Z]\d/g;
 const EVALS_WEB_API_BASE_URL = 'http://0.0.0.0:5000/api/evals/future';
+const RATING_DETAILS = [
+    'Intellectually stimulating',
+    'Usefulness',
+    'Learning athmosphere',
+    'Improved understanding of course content',
+    'Fairness in test material',
+    'Quality of learning experience',
+    'Instructor generated enthusiasm',
+    'Course Workload',
+    'Course Recommendation'
+];
 
-var globalSelectedRating = 8;
+var ratingVisibility = [true, true, false, false, false, false, false, true, true];
 
 function getRatings(courseCode, abbrevInstructorName) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let urlEncodedName = encodeURI(abbrevInstructorName);
         let url = `${EVALS_WEB_API_BASE_URL}?course=${courseCode}&abbrev_instructor=${urlEncodedName}`;
 
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                let resp = JSON.parse(xhr.responseText);
-                resolve(resp);
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    console.log(xhr.responseText);
+                    let resp = JSON.parse(xhr.responseText);
+                    resolve(resp);
+
+                } else {
+                    reject({
+                        status: xhr.status,
+                        statusText: xhr.statusText
+                    });
+                }
             }
         }
         xhr.onerror = function () {
             reject();
         }
 
+        xhr.open('GET', url, true);
         xhr.send();
     });
 }
@@ -34,56 +56,16 @@ function getRatingElements(rating) {
 
     for (let i = 0; i < numStars; i++) {
         let spanElement = document.createElement('span');
-        spanElement.className = 'fa fa-star checked';
+        spanElement.className = 'fas fa-star fa-xs checked';
         ratingElements.push(spanElement);
     }
     for (let i = 0; i < numUncheckedStars; i++) {
         let spanElement = document.createElement('span');
-        spanElement.className = 'fa fa-star';
+        spanElement.className = 'fas fa-star fa-xs';
         ratingElements.push(spanElement);
     }
 
     return ratingElements;
-}
-
-function makeRatings(rating) {
-    let newNode = document.createElement('span');
-    newNode.className += ' ratings';
-    let ratingElements = getRatingElements(rating);
-    for (let i = 0; i < ratingElements.length; i++) {
-        newNode.appendChild(ratingElements[i]);
-    }
-
-    return newNode;
-}
-
-function updateRatings(rootElement, rating) {
-    // Delete all the fa-star elements
-    let elementsToDelete = rootElement.querySelectorAll('.fa-star');
-    for (let i = 0; i < elementsToDelete.length; i++) {
-        rootElement.removeChild(elementsToDelete[i]);
-    }
-
-    // Add back the fa-star elements
-    let ratingElements = getRatingElements(rating);
-    rootElement.className += ' ratings';
-    for (let i = 0; i < ratingElements.length; i++) {
-        rootElement.appendChild(ratingElements[i]);
-    }
-}
-
-function setRatingsOnHtmlElement(htmlElement, ratings) {
-    htmlElement.setAttribute('data-ratings', ratings);
-}
-
-function getRatingsOnHtmlElement(htmlElement) {
-    let rawAttribute = htmlElement.getAttribute('data-ratings');
-
-    let attributes = null;
-    if (rawAttribute) {
-        attributes = rawAttribute.split(',').map(item => parseFloat(item));
-    }
-    return attributes;
 }
 
 function arrayMax(arr1, arr2) {
@@ -99,34 +81,67 @@ function arrayMax(arr1, arr2) {
     return newArray;
 }
 
+function arrayAdd(arr1, arr2) {
+    if (arr1.length != arr2.length) {
+        throw Error('array lengths dont match!');
+    }
+
+    let newArray = [];
+    for (let i = 0; i < arr1.length; i++) {
+        newArray.push(arr1[i] + arr2[i]);
+    }
+
+    return newArray;
+}
+
+function arrayDivide(arr1, num) {
+    let newArray = [];
+    for (let i = 0; i < arr1.length; i++) {
+        newArray.push(arr1[i] / num);
+    }
+
+    return newArray;
+}
+
 function updateRatingsOnAllCourses() {
     // Delete all existing ratings
     document.querySelectorAll('.ratings').forEach(item => item.parentElement.removeChild(item));
 
     // Going through all the courses
     let courseDivs = document.querySelectorAll('.courseResults');
-    courseDivs.forEach(courseDiv => {
+    courseDivs.forEach(async courseDiv => {
+
         let courseTitleTd = courseDiv.querySelector('.courseTitle');
         let courseCodeSpan = courseTitleTd.querySelector('.hiCC');
         let courseCode = courseCodeSpan.textContent.match(COURSE_CODE_REGEX);
 
-        // Create a blank course ratings span
-        let courseRatingSpan = document.createElement('span');
-        courseRatingSpan.className += 'course-level-ratings';
-        courseTitleTd.appendChild(courseRatingSpan);
+        // Show a spinner while the ratings are being fetched
+        let spinnerElementContainer = document.createElement('div');
+        spinnerElementContainer.className = 'spinner-container';
 
-        var courseRatings = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+        let spinnerElement = document.createElement('span');
+        spinnerElement.className = 'spinner';
+
+        let spinnerElementText = document.createElement('span');
+        spinnerElementText.textContent = 'Loading ratings...';
+        spinnerElementText.className = 'spinner-text';
+
+        spinnerElementContainer.appendChild(spinnerElement);
+        spinnerElementContainer.appendChild(spinnerElementText);
+
+        courseTitleTd.appendChild(spinnerElementContainer);
+
+        // The course average
+        var courseRatings = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var numRatings = 0;
 
         // Going through all the instructors
         let instructorsTds = courseDiv.querySelectorAll('.colInst');
-        // console.log('instructorsTds.length:' + instructorsTds.length);
-        instructorsTds.forEach((instructorsTd, instructorsTdIndex) => {
-            let instructorsLi = instructorsTd.getElementsByTagName('li');
-
-            // console.log('instructorsTdIndex:' + instructorsTdIndex);
-            // console.log('instructorsLi.length:' + instructorsLi.length);
-
-            Array.from(instructorsLi).forEach((instructorLi, instructorLiIndex) => {
+        for (let i = 0; i < instructorsTds.length; i++) {
+            let instructorsLi = instructorsTds[i].getElementsByTagName('li');
+            
+            for (let j = 0; j < instructorsLi.length; j++) {
+                let instructorLi = instructorsLi[j];
                 let rawAbbrevInstructor = instructorLi.textContent;
 
                 let tokenizedName = rawAbbrevInstructor.split(',');
@@ -134,49 +149,71 @@ function updateRatingsOnAllCourses() {
                 let firstNameInitials = tokenizedName[1].substring(1, tokenizedName[1].length - 1);
                 let abbrevInstructor = `${lastName} ${firstNameInitials}`;
 
-                let existingRating = getRatingsOnHtmlElement(instructorLi);
-                if (existingRating != null) {
+                console.log('help');
 
-                    nextCourseRatings = arrayMax(existingRating, courseRatings)
-        
-                    if (nextCourseRatings != courseRatings) {
-                        courseRatings = nextCourseRatings;
-                        updateRatings(courseRatingSpan, courseRatings[globalSelectedRating]);
-                        setRatingsOnHtmlElement(courseDiv, courseRatings);
-                    }
+                try {
+                    console.log('Trying ' + courseCode + ', ' + abbrevInstructor);
+                    let ratings = await getRatings(courseCode, abbrevInstructor);
+                    courseRatings = arrayAdd(courseRatings, ratings);
+                    numRatings += 1;
 
-                    let newNode = document.createElement('div');
-                    newNode.appendChild(makeRatings(existingRating[globalSelectedRating]));
-                    instructorLi.appendChild(newNode);
+                    console.log('Received ' + ratings);
+
+                } catch (e) {
+                    console.log('ERROR:', e);
+                }
+            }
+        }
+
+        console.log('Summed course average: ' + courseRatings);
+        console.log('numRatings: ' + numRatings);
+
+        // Remove the spinner
+        courseTitleTd.removeChild(spinnerElementContainer);
+
+        // Show the course averages
+        if (numRatings > 0) {
+
+            // Update the avg course rating
+            courseRatings = arrayDivide(courseRatings, numRatings);
+
+            // A wrapper div for all of our ratings
+            let courseRatingsWrapper = document.createElement('div');
+            
+            for (let i = 0; i < courseRatings.length; i++) {
+                let ratingElement = document.createElement('div');
+                ratingElement.className = "rating";
+                ratingElement.setAttribute('data-rating-category', i);
+
+                let ratingParts = getRatingElements(courseRatings[i]);
+                for (let j = 0; j < ratingParts.length; j++) {
+                    ratingElement.appendChild(ratingParts[j]);
+                }
+
+                let ratingText = document.createElement('span');
+                ratingText.className = 'rating-text';
+                ratingText.textContent = '  ' +  courseRatings[i].toFixed(2) + '  ' + RATING_DETAILS[i];
+                ratingElement.appendChild(ratingText);
+
+                courseRatingsWrapper.appendChild(ratingElement);
+
+                // Set its visibility based on ratingVisibility
+                if (ratingVisibility[i]) {
+                    ratingElement.style.display = 'block';
 
                 } else {
-                    getRatings(courseCode, abbrevInstructor).then((ratings) => {
-
-                        nextCourseRatings = arrayMax(ratings, courseRatings)
-        
-                        if (nextCourseRatings != courseRatings) {
-                            courseRatings = nextCourseRatings;
-                            updateRatings(courseRatingSpan, courseRatings[globalSelectedRating]);
-                            setRatingsOnHtmlElement(courseDiv, courseRatings);
-                        }
-    
-                        setRatingsOnHtmlElement(instructorLi, ratings);
-                        let newNode = document.createElement('div');
-                        newNode.appendChild(makeRatings(ratings[globalSelectedRating]));
-                        instructorLi.appendChild(newNode);
-    
-                    }).catch(error => {
-                        // console.log(error);
-                    });
+                    ratingElement.style.display = 'none';
                 }
-            });
-        });
+            }
+
+            courseTitleTd.appendChild(courseRatingsWrapper);
+        }
     });
 }
 
 function addCssFile() {
     var link = document.createElement("link");
-    link.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+    link.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css";
     link.type = "text/css";
     link.rel = "stylesheet";
     document.getElementsByTagName("head")[0].appendChild(link);
@@ -218,68 +255,67 @@ window.onload = function () {
     startObserving();
 };
 
-/**
- * Sorts the ordering of courses based on ratings
- * @param {Integer} selectedRatings The selected ratings (either -1, 0, 1, 2, ..., 8)
- * @param {Integer} order The ordering of the courses (either -1, 0, or 1)
- */
-function updateCourseRatings(selectedRatings, order) {
+function updateCourseRatingsVisibility(visibleRatings) {
     stopObserving();
-    var coursesDiv = document.getElementById("courses");
 
-    [].slice.call(coursesDiv.children)
-        .sort((courseA, courseB) => {
+    // Toggle on/off visibility on all ratings
+    let ratingElements = document.querySelectorAll('.rating');
+    for (let i = 0; i < ratingElements.length; i++) {
+        let ratingElement = ratingElements[i];
+        let ratingCategory = parseInt(ratingElement.getAttribute('data-rating-category'));
 
-            // If ratings determine the ordering
-            if (order == 0) {
-                return 1;
+        if (visibleRatings[ratingCategory]) {
+            ratingElement.style.display = "block";
 
-            } else {
+        } else {
+            ratingElement.style.display = "none";
+        }
+    }
+    startObserving();
+}
+
+function sortCourseListing(sortBy) {
+    stopObserving();
+
+    // Sort the courses
+    if (sortBy >= 0) {
+        var coursesDiv = document.getElementById("courses");
+        Array.prototype.slice.call(coursesDiv.children)
+            .sort((courseA, courseB) => {
                 let courseARatings = getRatingsOnHtmlElement(courseA);
                 let courseBRatings = getRatingsOnHtmlElement(courseB);
-                console.log(courseA);
-                console.log(courseB);
 
                 if (courseARatings == null || courseBRatings == null) {
                     return -1;
                 }
                 
-                let selectedCourseARating = courseARatings[selectedRatings];
-                let selectedCourseBRating = courseBRatings[selectedRatings];
+                let selectedCourseARating = courseARatings[sortBy];
+                let selectedCourseBRating = courseBRatings[sortBy];
 
-                if (selectedCourseARating == selectedCourseBRating) {
+                if (selectedCourseARating < selectedCourseBRating) {
+                    return -1;
+                    
+                } else if (selectedCourseARating == selectedCourseBRating) {
                     return 0;
+
+                } else {
+                    return 1;
                 }
-
-                if (order == -1) {
-                    return selectedCourseARating < selectedCourseBRating ? -1 : 1;
-
-                } else if (order == 1) {
-                    return selectedCourseARating > selectedCourseBRating ? -1 : 1;
-
-                }
-            }
-        })
-        .map(node => coursesDiv.appendChild(node));
+            })
+            .map(node => coursesDiv.appendChild(node));
+    }
     startObserving();
-    updateRatingsOnAllCourses();
 }
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-        let operation = request.operation;
-        let selectedRating = request.selectedRating;
-        let order = request.order;
+        let visibleRatings = request.visibleRatings;
+        let sortBy = request.sortBy;
 
-        globalSelectedRating = selectedRating;
+        ratingVisibility = visibleRatings;
 
-        switch (operation) {
-            case "reorder-ratings":
-                updateCourseRatings(selectedRating, order);
-                sendResponse({ status: "ok" });
-                break;
+        updateCourseRatingsVisibility(visibleRatings);
+        sortCourseListing(sortBy);
 
-            default:
-                throw Error("Unknown operation:", operation);
-        }            
+        sendResponse({ status: "ok" });         
     });
