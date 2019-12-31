@@ -33,7 +33,7 @@ import joblib
 
 def get_data():
     # Read in data from the csv file file
-    raw_data = pd.read_csv('ml-training-data.csv')
+    raw_data = pd.read_csv('../Data Processor/data/ml-training-data.csv')
 
     # Perform one hot encoding on the course and instructor column
     input_encoder = OneHotEncoder()
