@@ -134,7 +134,7 @@ if __name__ == "__main__":
         .option("sep", ",") \
         .option("header", "true") \
         .schema(RawRecord) \
-        .load("raw-data.csv")
+        .load("data/raw-data.csv")
 
     mydata = raw_data\
         .filter(raw_data.dept != "N/A")\
@@ -150,14 +150,19 @@ if __name__ == "__main__":
     mydata7 = regroup_instructors_name(mydata4)
     mydata8 = remove_all_null_values(mydata7)
 
-    # instructor_name_mappings = get_abbrev_instructor_name_mappings(mydata8)
-
     # Dump the csv file just for the ML model
     mydata8 \
         .select('course', 'instructor', 'cat1', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat9') \
-        .repartition(1).write.format("csv").option("header", "true").save('clean-data')
+        .repartition(1).write.format("csv").option("header", "true").save('data/ml-training-data')
 
     # Dump the csv file just for the instructors mapping
     mydata8 \
         .select('dept', 'course', 'instructor', 'abbrev_instructor') \
-        .repartition(1).write.format("csv").option("header", "true").save('instructor-name-mappings')
+        .repartition(1).write.format("csv").option("header", "true").save('data/instructor-name-mappings')
+
+    # Dump the csv file just for the database
+    mydata8 \
+        .select('dept', 'course', 'instructor', 'abbrev_instructor', 'term', 'year', 'cat1', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'num_invited', 'num_responded') \
+        .repartition(1).write.format("csv").option("header", "true").save('data/database-data')
+
+
