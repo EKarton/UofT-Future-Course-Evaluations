@@ -295,40 +295,60 @@ function sortCourseListing(sortBy) {
 
     // Sort the courses
     if (sortBy >= 0) {
-        var coursesDiv = document.getElementById("courses");
-        Array.prototype.slice.call(coursesDiv.children)
-            .sort((courseA, courseB) => {
-                console.log(courseA);
-                console.log(courseB);
-                let courseARatings = loadRatingsFromHtmlElement(courseA);
-                let courseBRatings = loadRatingsFromHtmlElement(courseB);
+        var rootCourseDiv = document.getElementById("courses");
+        var courseDivs = Array.prototype.slice.call(rootCourseDiv.children);
 
-                console.log(courseARatings);
-                console.log(courseBRatings);
+        console.log(courseDivs.length);
 
-                if (courseARatings == null && courseBRatings == null) {
-                    return 0;
-                }
+        // Take the courses with ratings
+        let courseDivsWithRatings = courseDivs.filter(courseDiv => loadRatingsFromHtmlElement(courseDiv) !== null);
 
-                if (courseARatings == null || courseBRatings == null) {
-                    return -1;
-                }
+        // Take the courses with no ratings
+        let courseDivsWithNoRatings = courseDivs.filter(courseDiv => loadRatingsFromHtmlElement(courseDiv) === null);
+
+        // Remove all courses
+        while (rootCourseDiv.firstChild) {
+            rootCourseDiv.removeChild(rootCourseDiv.firstChild);
+        }
+
+        // Sort the courses with ratings
+        courseDivsWithRatings = courseDivsWithRatings.sort((courseA, courseB) => {
+            let courseARatings = loadRatingsFromHtmlElement(courseA);
+            let courseBRatings = loadRatingsFromHtmlElement(courseB);
+            
+            let selectedCourseARating = courseARatings[sortBy];
+            let selectedCourseBRating = courseBRatings[sortBy];
+
+            if (selectedCourseARating < selectedCourseBRating) {
+                return -1;
                 
-                let selectedCourseARating = courseARatings[sortBy];
-                let selectedCourseBRating = courseBRatings[sortBy];
+            } else if (selectedCourseARating == selectedCourseBRating) {
+                return 0;
 
-                if (selectedCourseARating < selectedCourseBRating) {
-                    return -1;
-                    
-                } else if (selectedCourseARating == selectedCourseBRating) {
-                    return 0;
+            } else {
+                return 1;
+            }
+        });
 
-                } else {
-                    return 1;
-                }
-            })
-            .map(node => coursesDiv.appendChild(node));
+        for (let i = 0; i < courseDivsWithRatings.length; i++) {
+            let rating = loadRatingsFromHtmlElement(courseDivsWithRatings[i])[sortBy];
+            console.log(rating);
+        }
+        console.log(courseDivsWithRatings.length + courseDivsWithNoRatings.length);
+
+        // Add back the courses with ratings
+        for (let i = 0; i < courseDivsWithRatings.length; i++) {
+            rootCourseDiv.append(courseDivsWithRatings[i]);
+        }
+
+        // Add back the courses with no ratings
+        for (let i = 0; i < courseDivsWithNoRatings.length; i++) {
+            rootCourseDiv.append(courseDivsWithNoRatings[i]);
+        }
+
+        console.log(document.getElementById("courses").children.length);
     }
+    
     startObserving();
 }
 
