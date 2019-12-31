@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "description": "Display predicted course ratings on the UofT Timetable",
     "browser_action": {
-        "default_popup": "popup.html"
+        "default_popup": "popup/popup.html"
     },
     "content_scripts": [
         {
@@ -12,6 +12,8 @@
                 "styles.css"
             ],
             "js": [
+                "utils.js", 
+                "evals-api.js", 
                 "content.js"
             ],
             "matches": [
