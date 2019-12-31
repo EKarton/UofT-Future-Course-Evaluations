@@ -9,11 +9,18 @@ from courses_table import CoursesTable
 from sessions_table import SessionsTable
 from evaluations_table import EvaluationsTable
 
+import os
+from dotenv import load_dotenv
+
 if __name__ == "__main__":
-    host = "localhost"
-    database_name = "uoft_future_course_evaluations"
-    user = "emiliokartono"
-    password = "Molybdenum1122@1003004704"
+    # Load credentials from the .env file
+    load_dotenv()
+
+    # Load the DB
+    host = os.getenv("HOST")
+    database_name = os.getenv("DATABASE_NAME")
+    user = os.getenv("USER")
+    password = os.getenv("PASSWORD")
 
     with DeptsTable(host, database_name, user, password) as depts_table:
         with CoursesTable(host, database_name, user, password) as courses_table:
