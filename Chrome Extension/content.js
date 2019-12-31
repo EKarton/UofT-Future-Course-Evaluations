@@ -266,11 +266,6 @@ function stopObserving() {
     }
 }
 
-window.onload = function () {
-    addCssFile();
-    startObserving();
-};
-
 function updateCourseRatingsVisibility(visibleRatings) {
     stopObserving();
 
@@ -349,6 +344,11 @@ function sortCourseListing(sortBy) {
         console.log(document.getElementById("courses").children.length);
     }
     
+    startObserving();
+}
+
+window.onload = function () {
+    addCssFile();
     startObserving();
 }
 

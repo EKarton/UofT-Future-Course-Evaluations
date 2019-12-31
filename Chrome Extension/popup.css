@@ -1,0 +1,38 @@
+body {
+    width: 400px;
+    padding: 20px;
+}
+
+#logo-container {
+    display: inline-block;
+}
+
+#logo {
+    float: left;
+}
+
+#logo-text {
+    margin: 0;
+}
+
+#logo-caption {
+    text-align: center;
+}
+
+#update-button {
+    float: right;
+    margin-bottom: 20px;
+}
+
+#ordering-options-text {
+    margin: 0;
+    padding: 0;
+    margin-top: 8px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+}
+
+#ordering-options-container {
+    display: inline-block;
+}
