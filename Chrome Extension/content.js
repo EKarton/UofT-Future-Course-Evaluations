@@ -15,6 +15,7 @@
     ];
 
     var ratingVisibility = [true, true, false, false, false, false, false, true, true];
+    var observer = null;
 
     function getRatingElements(rating) {
         let roundedRating = Math.round(rating);
@@ -215,28 +216,23 @@
             });
     }
 
-    var target = null;
-    var observer = null
-
     function startObserving() {
+        if (observer !== null) {
+            observer.disconnect();
+        }
+
         MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
-        // select the target node
-        target = document.getElementById('courses');
+        let target = document.getElementById('courses');
 
-        // create an observer instance
-        observer = new MutationObserver(function (mutations, observer) {
-            // console.log(mutations, observer);
-            updateRatingsOnAllCourses();
-        });
-
-        // configuration of the observer:
         var config = {
             childList: true,
             characterData: true
         };
 
-        // pass in the target node, as well as the observer options
+        observer = new MutationObserver(function (mutations, observer) {
+            updateRatingsOnAllCourses();
+        });
         observer.observe(target, config);
     }
 
@@ -343,5 +339,4 @@
 
             sendResponse({ status: "ok" });         
         });
-
 })();
