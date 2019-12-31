@@ -1,7 +1,7 @@
 'use strict';
 
 const COURSE_CODE_REGEX = /[A-Z][A-Z][A-Z]\d\d\d[A-Z]\d/g;
-const EVALS_WEB_API_BASE_URL = 'http://0.0.0.0:5000/api/evals/future';
+const EVALS_BULK_WEB_API_BASE_URL = 'http://0.0.0.0:5000/api/bulk/evals/future';
 const RATING_DETAILS = [
     'Intellectually stimulating',
     'Usefulness',
@@ -16,19 +16,50 @@ const RATING_DETAILS = [
 
 var ratingVisibility = [true, true, false, false, false, false, false, true, true];
 
-function getRatings(courseCode, abbrevInstructorName) {
+function getRatings(courseCodes, abbrevInstructorNames) {
     return new Promise((resolve, reject) => {
-        let urlEncodedName = encodeURI(abbrevInstructorName);
-        let url = `${EVALS_WEB_API_BASE_URL}?course=${courseCode}&abbrev_instructor=${urlEncodedName}`;
+        let courseCodesQueryStringParam = '';
+        for (let i = 0; i < courseCodes.length; i++) {
+            courseCodesQueryStringParam += courseCodes[i] + ','
+        }
+
+        if (courseCodesQueryStringParam.length > 0) {
+            courseCodesQueryStringParam = courseCodesQueryStringParam.substring(0, courseCodesQueryStringParam.length - 1);
+        }
+
+        let instQueryStringParam = '';
+        for (let i = 0; i < abbrevInstructorNames.length; i++) {
+            instQueryStringParam += encodeURI(abbrevInstructorNames[i]) + ','
+        }
+
+        if (instQueryStringParam.length > 0) {
+            instQueryStringParam = instQueryStringParam.substring(0, instQueryStringParam.length - 1);
+        }
+
+        let url = `${EVALS_BULK_WEB_API_BASE_URL}?courses=${courseCodesQueryStringParam}&abbrev_instructors=${instQueryStringParam}`;
 
         let xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    console.log(xhr.responseText);
-                    let resp = JSON.parse(xhr.responseText);
-                    resolve(resp);
+
+                    let responses = JSON.parse(xhr.responseText);
+
+                    let parsedRatings = {};
+                    for (let i = 0; i < responses.length; i++) {
+                        let response = responses[i];
+                        let courseCode = response['course'];
+                        let instructor = response['instructor']
+                        let status = response['status'];
+
+                        if (status === "ok") {
+                            let ratings = response['ratings'];
+                            parsedRatings[courseCode + '|' + instructor] = ratings;
+                        }
+                    }
+
+                    resolve(parsedRatings);
 
                 } else {
                     reject({
@@ -116,17 +147,46 @@ function arrayDivide(arr1, num) {
     return newArray;
 }
 
-function updateRatingsOnAllCourses() {
-    // Delete all existing ratings
-    document.querySelectorAll('.ratings').forEach(item => item.parentElement.removeChild(item));
+function getCourseCodesAndInstructorsOnPage() {
+    let courseCodes = [];
+    let abbrevInstructors = [];
 
-    // Going through all the courses
     let courseDivs = document.querySelectorAll('.courseResults');
-    courseDivs.forEach(async courseDiv => {
-
+    for (let i = 0; i < courseDivs.length; i++) {
+        let courseDiv = courseDivs[i];
         let courseTitleTd = courseDiv.querySelector('.courseTitle');
         let courseCodeSpan = courseTitleTd.querySelector('.hiCC');
         let courseCode = courseCodeSpan.textContent.match(COURSE_CODE_REGEX);
+
+        let instructorsTds = courseDiv.querySelectorAll('.colInst');
+        for (let j = 0; j < instructorsTds.length; j++) {
+            let instructorsLi = instructorsTds[j].getElementsByTagName('li');
+            
+            for (let k = 0; k < instructorsLi.length; k++) {
+                let instructorLi = instructorsLi[k];
+                let rawAbbrevInstructor = instructorLi.textContent;
+
+                let tokenizedName = rawAbbrevInstructor.split(',');
+                let lastName = tokenizedName[0]
+                let firstNameInitials = tokenizedName[1].substring(1, tokenizedName[1].length - 1);
+                let abbrevInstructor = `${lastName} ${firstNameInitials}`;
+
+                courseCodes.push(courseCode);
+                abbrevInstructors.push(abbrevInstructor);
+            }
+        }
+    }
+
+    return {
+        courseCodes: courseCodes,
+        abbrevInstructors: abbrevInstructors
+    };
+}
+
+function addSpinners() {
+    // Going through all the courses
+    let courseDivs = document.querySelectorAll('.courseResults');
+    courseDivs.forEach(courseDiv => {
 
         // Show a spinner while the ratings are being fetched
         let spinnerElementContainer = document.createElement('div');
@@ -142,7 +202,31 @@ function updateRatingsOnAllCourses() {
         spinnerElementContainer.appendChild(spinnerElement);
         spinnerElementContainer.appendChild(spinnerElementText);
 
+        let courseTitleTd = courseDiv.querySelector('.courseTitle');
         courseTitleTd.appendChild(spinnerElementContainer);
+    });
+}
+
+function removeSpinners() {
+    // Going through all the courses
+    let courseDivs = document.querySelectorAll('.courseResults');
+    courseDivs.forEach(courseDiv => {
+        let courseTitleTd = courseDiv.querySelector('.courseTitle');
+        courseTitleTd.removeChild(courseTitleTd.querySelector('.spinner-container'));
+    });
+}
+
+function updateRatingsOnAllCourseDivs(ratings) {
+    // Delete all existing ratings
+    document.querySelectorAll('.ratings').forEach(item => item.parentElement.removeChild(item));
+
+    // Going through all the courses
+    let courseDivs = document.querySelectorAll('.courseResults');
+    courseDivs.forEach(courseDiv => {
+
+        let courseTitleTd = courseDiv.querySelector('.courseTitle');
+        let courseCodeSpan = courseTitleTd.querySelector('.hiCC');
+        let courseCode = courseCodeSpan.textContent.match(COURSE_CODE_REGEX);
 
         // The course average
         var courseRatings = [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -162,27 +246,13 @@ function updateRatingsOnAllCourses() {
                 let firstNameInitials = tokenizedName[1].substring(1, tokenizedName[1].length - 1);
                 let abbrevInstructor = `${lastName} ${firstNameInitials}`;
 
-                console.log('help');
-
-                try {
-                    console.log('Trying ' + courseCode + ', ' + abbrevInstructor);
-                    let ratings = await getRatings(courseCode, abbrevInstructor);
-                    courseRatings = arrayAdd(courseRatings, ratings);
+                let key = courseCode + '|' + abbrevInstructor;
+                if (key in ratings) {
+                    courseRatings = arrayAdd(courseRatings, ratings[key]);
                     numRatings += 1;
-
-                    console.log('Received ' + ratings);
-
-                } catch (e) {
-                    console.log('ERROR:', e);
                 }
             }
         }
-
-        console.log('Summed course average: ' + courseRatings);
-        console.log('numRatings: ' + numRatings);
-
-        // Remove the spinner
-        courseTitleTd.removeChild(spinnerElementContainer);
 
         // Show the course averages
         if (numRatings > 0) {
@@ -225,6 +295,21 @@ function updateRatingsOnAllCourses() {
             courseTitleTd.appendChild(courseRatingsWrapper);
         }
     });
+}
+
+function updateRatingsOnAllCourses() {
+    addSpinners();
+
+    let courseDetails = getCourseCodesAndInstructorsOnPage();
+    getRatings(courseDetails['courseCodes'], courseDetails['abbrevInstructors'])
+        .then(ratings => {
+            removeSpinners();
+            updateRatingsOnAllCourseDivs(ratings);
+        })
+        .catch(error => {
+            console.error(error);
+            removeSpinners();
+        });
 }
 
 function addCssFile() {
@@ -325,12 +410,6 @@ function sortCourseListing(sortBy) {
             }
         });
 
-        for (let i = 0; i < courseDivsWithRatings.length; i++) {
-            let rating = loadRatingsFromHtmlElement(courseDivsWithRatings[i])[sortBy];
-            console.log(rating);
-        }
-        console.log(courseDivsWithRatings.length + courseDivsWithNoRatings.length);
-
         // Add back the courses with ratings
         for (let i = 0; i < courseDivsWithRatings.length; i++) {
             rootCourseDiv.append(courseDivsWithRatings[i]);
@@ -340,8 +419,6 @@ function sortCourseListing(sortBy) {
         for (let i = 0; i < courseDivsWithNoRatings.length; i++) {
             rootCourseDiv.append(courseDivsWithNoRatings[i]);
         }
-
-        console.log(document.getElementById("courses").children.length);
     }
     
     startObserving();

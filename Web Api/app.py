@@ -112,7 +112,7 @@ def get_future_evals():
         return 'Must have \'instructor\' or \'abbrev_instructor\' in query string', 400
 
     if course is None:
-        return 'Course ' + course + ' must be known', 400
+        return 'Must include \'courses\' in the query string', 400
     
     if instructor is None:
         return 'Instructor ' + instructor + ' must be known', 400
@@ -124,60 +124,69 @@ def get_future_evals():
         return 'Rating with course ' + course + ' with instructor ' + instructor + ' cannot be determined', 400
 
 @app.route('/api/bulk/evals/future', methods=['GET'])
-def get_future_evalsin_bulk():
-    courses = request.args.get('courses').split(',')
-    instructors = []
+def get_future_evals_in_bulk():
+    courses = None
+    instructors = None
+    abbrev_instructors = None
+
+    if 'courses' in request.args:
+        courses = request.args.get('courses').split(',')
 
     if 'instructors' in request.args:
         instructors = request.args.get('instructors').split(',')
 
-        if len(courses) != len(instructors):
-            return "Number of courses does not equal to the number of instructors", 400
-
     elif 'abbrev_instructors' in request.args:
         abbrev_instructors = request.args.get('abbrev_instructors').split(',')
 
-        if len(courses) != len(abbrev_instructors):
-            return "Number of courses does not equal to the number of instructors", 400
+    if courses is None:
+        return 'Must include \'courses\' in the query string', 400
+    
+    if instructors is None and abbrev_instructors is None:
+        return 'Must include either \'instructor\' or \'abbrev_instructors\' in query string', 400
 
-        for i in range(len(abbrev_instructors)):
-            course_code = courses[i]
+    print(abbrev_instructors, instructors)
+    print(courses)
 
-            fullname = get_fullname_from_abbreviation(course_code, abbrev_instructors[i])
-            instructors.append(fullname)
+    if instructors is not None and len(courses) != len(instructors):
+        return 'Number of courses and instructors must be the same', 400
+    
+    if abbrev_instructors is not None and len(courses) != len(abbrev_instructors):
+        return 'Number of courses and instructors must be the same', 400
 
     results = []
-
     for i in range(len(courses)):
         course = courses[i]
-        instructor = instructors[i]
-        ratings = make_prediction(course, instructor)[0].tolist()
+        instructor = None
+        instructor_name_in_response = None
 
-        result = {
-            'course': course,
-            'instructor': instructor,
-            'future-ratings': {
-                'cat1': ratings[0],
-                'cat2': ratings[1],
-                'cat3': ratings[2],
-                'cat4': ratings[3],
-                'cat5': ratings[4],
-                'cat6': ratings[5],
-                'cat7': ratings[6],
-                'cat8': ratings[7],
-                'cat9': ratings[8]
-            },
+        if instructors is not None:
+            instructor = instructors[i]
+            instructor_name_in_response = instructors[i]
+        else:
+            instructor = get_fullname_from_abbreviation(course, abbrev_instructors[i])
+            instructor_name_in_response = abbrev_instructors[i]
 
-            # If the course was taught before, show the ratings of all ratings with that course
-            # Else show the rating of all courses taught by this instructor
-            'past-ratings': {
-
+        result = None
+        try:
+            ratings = make_prediction(course, instructor)[0].tolist()
+            result = {
+                'course': course,
+                'instructor': instructor_name_in_response,
+                'status': 'ok',
+                'ratings': ratings
             }
-        }
 
-        results.append(result)
+        except:
+            result = {
+                'course': course,
+                'instructor': instructor_name_in_response,
+                'status': 'fail',
+                'error': 'Rating with course ' + str(course) + ' with instructor ' + str(instructor_name_in_response) + ' cannot be determined'
+            }
+        finally:
+            results.append(result)
 
-    return jsonify(results)
+    return jsonify(results), 200
 
 if __name__ == '__main__':
     # Load credentials from the .env file
