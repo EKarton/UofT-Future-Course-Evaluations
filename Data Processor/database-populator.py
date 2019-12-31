@@ -1,5 +1,13 @@
 import csv
-from database import DeptsTable, CoursesTable, InstructorsTable, SessionsTable, EvaluationsTable
+
+import sys
+sys.path.append('../Database')
+
+from instructors_table import InstructorsTable
+from depts_table import DeptsTable
+from courses_table import CoursesTable
+from sessions_table import SessionsTable
+from evaluations_table import EvaluationsTable
 
 if __name__ == "__main__":
     host = "localhost"
@@ -41,7 +49,3 @@ if __name__ == "__main__":
                                     row['cat1'], row['cat2'], row['cat3'], row['cat4'], row['cat5'], row['cat6'], row['cat7'], row['cat8'],
                                     row['num_responded'], row['num_invited']
                                 )
-
-
-
-
