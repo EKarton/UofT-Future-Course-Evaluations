@@ -68,6 +68,19 @@ function getRatingElements(rating) {
     return ratingElements;
 }
 
+function saveRatingsToHtmlElement(htmlElement, ratings) {
+    htmlElement.setAttribute('data-ratings', ratings);
+}
+
+function loadRatingsFromHtmlElement(htmlElement) {
+    let rawVal = htmlElement.getAttribute('data-ratings');
+
+    if (rawVal) {
+        return rawVal.split(',').map(item => parseFloat(item));
+    }
+    return null;
+}
+
 function arrayMax(arr1, arr2) {
     if (arr1.length != arr2.length) {
         throw Error('array lengths dont match!');
@@ -177,6 +190,9 @@ function updateRatingsOnAllCourses() {
             // Update the avg course rating
             courseRatings = arrayDivide(courseRatings, numRatings);
 
+            // Save the ratings to the HTML element for sorting
+            saveRatingsToHtmlElement(courseDiv, courseRatings);
+
             // A wrapper div for all of our ratings
             let courseRatingsWrapper = document.createElement('div');
             
@@ -282,8 +298,17 @@ function sortCourseListing(sortBy) {
         var coursesDiv = document.getElementById("courses");
         Array.prototype.slice.call(coursesDiv.children)
             .sort((courseA, courseB) => {
-                let courseARatings = getRatingsOnHtmlElement(courseA);
-                let courseBRatings = getRatingsOnHtmlElement(courseB);
+                console.log(courseA);
+                console.log(courseB);
+                let courseARatings = loadRatingsFromHtmlElement(courseA);
+                let courseBRatings = loadRatingsFromHtmlElement(courseB);
+
+                console.log(courseARatings);
+                console.log(courseBRatings);
+
+                if (courseARatings == null && courseBRatings == null) {
+                    return 0;
+                }
 
                 if (courseARatings == null || courseBRatings == null) {
                     return -1;
