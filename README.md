@@ -1,71 +1,31 @@
-# UofT-Course-Evaluations-Dataset
-Stores the dataset of past course evaluations
+# UofT Future Course Evaluations
 
-# NOTES:
-Do NOT USE virtualenv to create your virtual environment
-To run the main.py, run spark-submit main.py 
+### Description
+The UofT Future Course Evaluations aims to help students choose courses by embedding **future course evaluations** on the UofT Timetable (https://timetable.iit.artsci.utoronto.ca/). Future course evaluations are obtained using a machine learning model that uses past course evaluations to predict how well a course will be run by a specific instructor.
 
-Install requirements: pip3 install -r requirements.txt
+The UofT Future Course Evaluations project is a full stack web development project. It is comprised from several components: the Web Scraper, the Data Professor, the Database, the ML Model, the Flask Web API, and the Chrome Extension.
 
-# Part One:
-Task:
-- Given a course and a professor name, predict its difficulty and workload
+### Table of Contents
+- Walkthrough
+- Installation
+- Usage
+- Credits
+- License
 
-What should it predict?
-- Predicted difficulty of a course and instructor
-- Predicted workload of a course and instructor
+### Walkthrough of this project
+- WIP
 
-What should be displayed?
-- Graph of course and difficulty per year (over time) with predicted difficulty via linear regression
-- Graph of course and workload per year (over time) with predicted workload via linear regression
+### Installation
+##### Required Programs and Tools:
+- Local instance of Apache Spark
+- Python 3
+- Unix machine
 
-# Part Two:
-- We need to compute predicted scores for all courses from the UofT Timetable Page based on part one
-- Then, the user will need to select what they want to see (difficulty and/or workload and/or enthusiasm, etc)
-  - There is a max. 2 categories to select from
-- Then we ask the user what they want to see (i.e, bird courses in a particular department, bird courses by departments, etc)
-- Then, we plot them in a graph, color code it based on what they want to see, and cluster them using the EM algorithm.
-
-# Alternative side project:
-- Create a chrome extension that will embed ratings on the UofT timetable webpage
-- It involves:
-  - Displaying the rating of a course
-  - Displaying the rating of a course with a professor
-
-- The ratings to be displayed could be:
-  - Birdiness
-  - Course difficulty
-  - Course recommendations
-  - etc..
-
-  based on user preference
-
-- The user preference can be changed by settings which are embedded in the UofT timetable webpage
-  - Ex: select ratings from: birdiness, course difficulty, etc. or aggregate
-  - Ex: sort listings by increasing order of rating, decreasing order of rating, etc.
-
-  This is all embedded as UI elements on the webpage (so the chrome extension will modify the UI)
-
-- Problem: How do you convert ('CSC324H1', 'Liu, D.') to ('CSC324H1', 'David Liu')?
-  1. Approach #1: 
-     - For each course evaluation, map David Liu to Liu, D.
-     - Then, we do a search for 'CSC324H1', 'Liu, D' and it should return 'David Liu'
-     - If there are no results, we do a search for department 'CSC' and 'Liu, D'. It should return 'David Liu'
-     - If there are no results, we do a search for any course and 'Liu, D.'
-
-## Local Installation:
-
-### Pre-requisites:
-Ensure that you have:
-1. Local instance of Apache Spark
-2. Python 3
-3. Unix computer
-
-### Step 0: Install libraries
+##### Step 0: Install libraries
 1. In the root folder of the project, run ```pip3 install -r requirements.txt```
 
-### Step 1: Scrapping course evaluations
-1. In the ```Data Scraper``` folder, copy the file ```.env-template```, and rename the copied file to ```.env```.
+##### Step 1: Scrapping course evaluations
+1. In the ```Web Scraper``` folder, copy the file ```.env-template```, and rename the copied file to ```.env```.
 2. Open the ```.env``` file and replace the contents to your Utorid and your Utorid password.
      - For instance, if your utorid is ```lfirstname``` and your utorid password is ```123```, then your ```.env``` file should look like:
           ```
@@ -74,25 +34,25 @@ Ensure that you have:
           ```
 2. In the terminal, run ```python3 main.py```. It will dump the scrapped course evaluations to a csv file named ```raw-data.csv```.
 
-### Step 2: Process the data:
+##### Step 2: Process the data:
 1. In the ```Data Processor``` folder, create a folder called ```data```
-2. Copy the csv file ```Data Scraper/raw-data.csv``` to the ```Data Processor/data/``` folder
+2. Copy the csv file ```Web Scraper/raw-data.csv``` to the ```Data Processor/data/``` folder
 3. In the terminal, change directories to the ```Data Processor``` folder, and run ```spark-submit pre-process.py```
 
-### Step 3: Dump the processed data to the database
+##### Step 3: Dump the processed data to the database
 1. In the ```Data Processor``` folder, copy the file ```.env-template```, and rename the copied file to ```.env```.
 2. In the ```.env``` file, replace the contents to your DB credentials with WRITE permissions
 3. In the terminal, run ```python3 database-populator.py```
 
-### Step 4: Train the ML model
+##### Step 4: Train the ML model
 1. In the ```ML Model``` folder, run the command ```python3 ml.py```
 
-### Step 5: Run the Web API
+##### Step 5: Run the Web API
 1. In the ```Web Api``` folder, copy the file ```.env-template```, and rename the copied file to ```.env```.
 2. In the ```.env``` file, replace the contents to your DB credentials with READ permissions
 3. In the ```Web Api``` folder, run the command ```python3 app.py```
 
-### Step 6: Running the Chrome Extension:
+##### Step 6: Running the Chrome Extension:
 1. Open Google Chrome without web security
 2. Go to ```chrome://extensions```
 3. Drag and drop the ```Chrome Extensions``` folder to that webpage
@@ -101,3 +61,12 @@ Ensure that you have:
 6. On the top of the browser, there will be a warning sign about loading unsafe scripts. Click on it and allow loading unsafe scripts
 7. Reload the page
 8. Load some courses. It should now show the predicted course ratings.
+
+### Usage
+Please note that this project is used for educational purposes and is not intended to be used commercially. We are not liable for any damages/changes done by this project.
+
+### Credits
+Emilio Kartono, who made the entire project.
+
+### License
+This project is protected under the GNU licence. Please refer to the LICENCE for more information.
