@@ -145,3 +145,5 @@ filename
 #data.csv
 
 #*.csv
+
+.DS_Store
