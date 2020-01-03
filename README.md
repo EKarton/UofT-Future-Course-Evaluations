@@ -9,6 +9,7 @@ The UofT Future Course Evaluations project is a full stack web development proje
 - Walkthrough
 - Installation
 - Usage
+- Todo
 - Credits
 - License
 
@@ -16,35 +17,35 @@ The UofT Future Course Evaluations project is a full stack web development proje
 First, users will be using the UofT Timetable page (https://timetable.iit.artsci.utoronto.ca/). In the homepage, they will need to specify which courses they are interested in taking.
 <div width="100%">
     <p align="center">
-<img src="https://raw.githubusercontent.com/EKarton/UofT-Timetable-Generator/master/docs/images/System%20Architecture.PNG" width="600px"/>
+<img src="https://raw.githubusercontent.com/EKarton/UofT-Future-Course-Evaluations/master/docs/Init-Screen.png" width="600px"/>
     </p>
 </div>
 
 After clicking on the search button, it will load the courses and fetch their future course evaluations from the Web Api.
 <div width="100%">
     <p align="center">
-<img src="https://raw.githubusercontent.com/EKarton/UofT-Timetable-Generator/master/docs/images/System%20Architecture.PNG" width="600px"/>
+<img src="https://raw.githubusercontent.com/EKarton/UofT-Future-Course-Evaluations/master/docs/Loading-Screen.png" width="600px"/>
     </p>
 </div>
 
 Once the future course evaluations load, it will display the course evaluations below each course listing.
 <div width="100%">
     <p align="center">
-<img src="https://raw.githubusercontent.com/EKarton/UofT-Timetable-Generator/master/docs/images/System%20Architecture.PNG" width="600px"/>
+<img src="https://raw.githubusercontent.com/EKarton/UofT-Future-Course-Evaluations/master/docs/Sample-Rating-Screen.png" width="600px"/>
     </p>
 </div>
 
 In addition, users are able to sort the course listings and/or toggle the visibility of course evaluations in the Chrome Extension. For instance, users can sort course listings based on their workloads and only show their course workloads.
 <div width="100%">
     <p align="center">
-<img src="https://raw.githubusercontent.com/EKarton/UofT-Timetable-Generator/master/docs/images/System%20Architecture.PNG" width="600px"/>
+<img src="https://raw.githubusercontent.com/EKarton/UofT-Future-Course-Evaluations/master/docs/Options-Screen.png" width="600px"/>
     </p>
 </div>
 
 After clicking the Update button on the Chrome Extension, it will update the course listings.
 <div width="100%">
     <p align="center">
-<img src="https://raw.githubusercontent.com/EKarton/UofT-Timetable-Generator/master/docs/images/System%20Architecture.PNG" width="600px"/>
+<img src="https://raw.githubusercontent.com/EKarton/UofT-Future-Course-Evaluations/master/docs/Updated-Ratings-Screen.png" width="600px"/>
     </p>
 </div>
 
@@ -94,6 +95,12 @@ After clicking the Update button on the Chrome Extension, it will update the cou
 6. On the top of the browser, there will be a warning sign about loading unsafe scripts. Click on it and allow loading unsafe scripts
 7. Reload the page
 8. Load some courses. It should now show the predicted course ratings.
+
+### Todo
+- Add a web page justifying why its predicted course rating is the way it is (by displaying real past data)
+- Add a link to that web page below the course ratings
+- Make a Docker file for the web app
+- Deploy the web app to AWS
 
 ### Usage
 Please note that this project is used for educational purposes and is not intended to be used commercially. We are not liable for any damages/changes done by this project.
