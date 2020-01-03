@@ -99,7 +99,6 @@ After clicking the Update button on the Chrome Extension, it will update the cou
 ### Todo
 - Add a web page justifying why its predicted course rating is the way it is (by displaying real past data)
 - Add a link to that web page below the course ratings
-- Make a Docker file for the web app
 - Deploy the web app to AWS
 
 ### Usage
