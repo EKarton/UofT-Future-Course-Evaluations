@@ -56,7 +56,8 @@ After clicking the Update button on the Chrome Extension, it will update the cou
 - Unix machine
 
 ##### Step 0: Install libraries
-1. In the root folder of the project, run ```pip3 install -r requirements.txt```
+1. Update pip by running the command ```pip install --upgrade pip```
+2. In the root folder of the project, run ```pip3 install -r requirements.txt```
 
 ##### Step 1: Scrapping course evaluations
 1. In the **Web Scraper** folder, copy the file *.env-template*, and rename it to *.env*.
