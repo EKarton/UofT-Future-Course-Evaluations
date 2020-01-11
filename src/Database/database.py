@@ -12,7 +12,7 @@ class Database():
 
     def start(self):
         print("Starting connection to database")
-        self.connection = psycopg2.connect(host=self.host, port=self.port database=self.database_name, user=self.user, password=self.password)
+        self.connection = psycopg2.connect(host=self.host, port=self.port, database=self.database_name, user=self.user, password=self.password)
         print("Connected to database")
 
     def shutdown(self):
