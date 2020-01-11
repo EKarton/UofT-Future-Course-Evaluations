@@ -193,13 +193,11 @@ if __name__ == '__main__':
     load_dotenv()
 
     # Load the DB
-    host = os.getenv("HOST")
-    port = os.getenv("PORT")
-    db_name = os.getenv("DATABASE_NAME")
-    user = os.getenv("USER")
-    password = os.getenv("PASSWORD")
-
-    print(user)
+    host = os.getenv("DB_HOST")
+    port = os.getenv("DB_PORT")
+    db_name = os.getenv("DB_NAME")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
     
     instructors_table = InstructorsTable(host, port, db_name, user, password)
     instructors_table.start()
