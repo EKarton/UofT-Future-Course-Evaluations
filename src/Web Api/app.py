@@ -188,6 +188,10 @@ def get_future_evals_in_bulk():
 
     return jsonify(results), 200
 
+@app.route('/api/status', methods=['GET'])
+def get_status():
+    return 'OK', 200
+
 if __name__ == '__main__':
     # Load credentials from the .env file
     load_dotenv()
