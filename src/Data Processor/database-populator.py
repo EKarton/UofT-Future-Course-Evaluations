@@ -18,15 +18,16 @@ if __name__ == "__main__":
 
     # Load the DB
     host = os.getenv("HOST")
+    port = os.getenv("PORT")
     database_name = os.getenv("DATABASE_NAME")
     user = os.getenv("USER")
     password = os.getenv("PASSWORD")
 
-    with DeptsTable(host, database_name, user, password) as depts_table:
-        with CoursesTable(host, database_name, user, password) as courses_table:
-            with InstructorsTable(host, database_name, user, password) as instructors_table:
-                with SessionsTable(host, database_name, user, password) as sessions_table:
-                    with EvaluationsTable(host, database_name, user, password) as evaluations_table:
+    with DeptsTable(host, port, database_name, user, password) as depts_table:
+        with CoursesTable(host, port, database_name, user, password) as courses_table:
+            with InstructorsTable(host, port, database_name, user, password) as instructors_table:
+                with SessionsTable(host, port, database_name, user, password) as sessions_table:
+                    with EvaluationsTable(host, port, database_name, user, password) as evaluations_table:
 
                         # Drop all the tables
                         evaluations_table.drop_table()

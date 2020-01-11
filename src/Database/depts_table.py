@@ -3,8 +3,8 @@ from database import Database
 
 class DeptsTable(Database):
 
-    def __init__(self, host, database_name, user, password):
-        super().__init__(host, database_name, user, password, 'depts')
+    def __init__(self, host, port, database_name, user, password):
+        super().__init__(host, port, database_name, user, password, 'depts')
 
     def create_table_if_not_exist(self):
         sql = """CREATE TABLE IF NOT EXISTS depts(

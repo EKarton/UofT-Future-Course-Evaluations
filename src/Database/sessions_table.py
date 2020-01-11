@@ -2,8 +2,8 @@ import psycopg2
 from database import Database
 
 class SessionsTable(Database):
-    def __init__(self, host, database_name, user, password):
-        super().__init__(host, database_name, user, password, 'sessions')
+    def __init__(self, host, port, database_name, user, password):
+        super().__init__(host, port, database_name, user, password, 'sessions')
 
     def create_table_if_not_exist(self):
         sql = """CREATE TABLE IF NOT EXISTS sessions(
