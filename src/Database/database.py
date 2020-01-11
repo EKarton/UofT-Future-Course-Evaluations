@@ -1,9 +1,10 @@
 import psycopg2
 
 class Database():
-    def __init__(self, host='localhost', database_name='my_db', user='superuser', password='pass', table_name=''):
+    def __init__(self, host='localhost', port=5432, database_name='my_db', user='superuser', password='pass', table_name=''):
         self.connection = None
         self.host = host
+        self.port = port
         self.database_name = database_name
         self.user = user
         self.password = password
@@ -11,7 +12,7 @@ class Database():
 
     def start(self):
         print("Starting connection to database")
-        self.connection = psycopg2.connect(host=self.host, database=self.database_name, user=self.user, password=self.password)
+        self.connection = psycopg2.connect(host=self.host, port=self.port database=self.database_name, user=self.user, password=self.password)
         print("Connected to database")
 
     def shutdown(self):

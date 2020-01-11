@@ -194,10 +194,11 @@ if __name__ == '__main__':
 
     # Load the DB
     host = os.getenv("HOST")
+    port = os.getenv("PORT")
     db_name = os.getenv("DATABASE_NAME")
     user = os.getenv("USER")
     password = os.getenv("PASSWORD")
-    instructors_table = InstructorsTable(host, db_name, user, password)
+    instructors_table = InstructorsTable(host, port, db_name, user, password)
     instructors_table.start()
 
     # Load the ML model
