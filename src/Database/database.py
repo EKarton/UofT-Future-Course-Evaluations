@@ -11,7 +11,7 @@ class Database():
         self.table_name = table_name
 
     def start(self):
-        print("Starting connection to database", self.user)
+        print("Starting connection to database")
         self.connection = psycopg2.connect(host=self.host, port=self.port, database=self.database_name, user=self.user, password=self.password)
         print("Connected to database")
 

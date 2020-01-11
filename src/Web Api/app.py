@@ -198,6 +198,9 @@ if __name__ == '__main__':
     db_name = os.getenv("DATABASE_NAME")
     user = os.getenv("USER")
     password = os.getenv("PASSWORD")
+
+    print(user)
+    
     instructors_table = InstructorsTable(host, port, db_name, user, password)
     instructors_table.start()
 
