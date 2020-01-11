@@ -198,6 +198,7 @@ if __name__ == '__main__':
     db_name = os.getenv("DB_NAME")
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
+    app_port = os.getenv("APP_PORT")
     
     instructors_table = InstructorsTable(host, port, db_name, user, password)
     instructors_table.start()
@@ -212,4 +213,4 @@ if __name__ == '__main__':
     output_scaler_file = '../ML Model/saved-output-scalar.pkl'
     output_scaler = p.load(open(output_scaler_file, 'rb'))
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=app_port)
