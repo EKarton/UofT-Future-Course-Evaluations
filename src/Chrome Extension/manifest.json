@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "Course ratings on UofT Timetable",
-    "version": "0.1.0",
+    "name": "UofT Timetable Course Ratings Extension",
+    "version": "0.0.0.1",
     "description": "Display predicted course ratings on the UofT Timetable",
     "browser_action": {
         "default_popup": "popup/popup.html"
