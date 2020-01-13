@@ -35,16 +35,16 @@ It involves:
         
 1. Type in VPC in the search bar:
 
-![alt_text](images/image47.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image47.png"/></p></div>
 
 2. Then, click on “Your VPC” and select “Create your VPC”:
 
-![alt_text](images/image73.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image73.png"/></p></div>
 
 3. Type in a name for your VPC with the submask being “10.0.0.0/16”. Then, click “create”:
 
 
-![alt_text](images/image44.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image44.png"/></p></div>
 
 4. Then click “create”. You have made your VPC
 
@@ -59,11 +59,11 @@ It involves:
 *   To create our internal subnet #1:
 1. In the VPC page, click on “Subnets” and click on “Create Subnets”:
 
-![alt_text](images/image4.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image4.png"/></p></div>
 
 2. Then, set the VPC to the VPC we made earlier, and IPv4 CIDR block “10.0.1.0/24”. Then click “create”:
 
-![alt_text](images/image12.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image12.png"/></p></div>
 
 
 3. You have made your internal subnet
@@ -74,11 +74,11 @@ It involves:
 *   To create our external subnet:
 1. In the VPC page, click on “Subnets” and click on “Create Subnets”:
 
-![alt_text](images/image4.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image4.png"/></p></div>
 
 2. Then, set the VPC to the VPC we made earlier, and IPv4 CIDR block “10.0.0.0/24”. Then click “create”:
 
-![alt_text](images/image46.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image46.png"/></p></div>
 
 3. You have made your public subnet
 
@@ -87,29 +87,29 @@ It involves:
 *   To create an internet gateway:
 1. Go to “Internet Gateways” and click on “Create internet gateway”:
 
-![alt_text](images/image21.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image21.png"/></p></div>
 
 2. Then, name your gateway and click “Create”:
 
-![alt_text](images/image56.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image56.png"/></p></div>
 
 3. You will notice that it is “detached”. That means that it is not attached to any VPC yet:
 
-![alt_text](images/image24.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image24.png"/></p></div>
 
 4. To attach it to a VPC, click on the internet gateway, select “Actions”, and click on “Attach to VPC”:
 
-![alt_text](images/image70.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image70.png"/></p></div>
 
 
 5. Then, select our VPC and click “Attach”:
 
-![alt_text](images/image14.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image14.png"/></p></div>
 
 
 6. Now it is attached to our VPC and we have made our Internet Gateway:
 
-![alt_text](images/image71.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image71.png"/></p></div>
 
 
 #### 4. Creating routing tables
@@ -126,54 +126,54 @@ What we want:
 To create the routing table for our private subnet:
 1. Go to the “Routing Table” tab, and click on “Create Routing Table”:
 
-![alt_text](images/image30.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image30.png"/></p></div>
 
 2. Then, name the routing table and attach our VPC to that routing table:
 
-![alt_text](images/image53.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image53.png"/></p></div>
 
 3. Then click “Create”. It now should look like:
 
-![alt_text](images/image68.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image68.png"/></p></div>
 
 4. Now we need to attach it to our private subnet. To do this, select our private routing table, select the “Subnet Associations” tab, and click on “Edit subnet associations”:
 
-![alt_text](images/image3.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image3.png"/></p></div>
 
 5. Then, select our private subnet, and click “Create”:
 
-![alt_text](images/image51.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image51.png"/></p></div>
 
 6. Note that you don’t need to change the routing table entries because by default, it already included the VPC’s routing entry in the routing table for you:
 
-![alt_text](images/image43.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image43.png"/></p></div>
 
 7. You have successfully created a routing table for your private subnet
 
 To create the routing table for our public subnet:
 1. Create a new routing table:
 
-![alt_text](images/image40.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image40.png"/></p></div>
 
 2. Enter the name and our VPC:
 
-![alt_text](images/image9.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image9.png"/></p></div>
 
 3. Attach the routing table to our public subnet:
 
-![alt_text](images/image66.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image66.png"/></p></div>
 
-![alt_text](images/image57.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image57.png"/></p></div>
 
 
 4. Contrary to the private subnet, we need to allow the public subnet to reach the internet gateway. To do this, we need to make a new entry in the routing table mapping 0.0.0.0/0 (meaning to match any IP address) to the Internet Gateway
 *   Recall that in CIDR, it will match the longest prefix. Thus, 0.0.0.0/0 means that it will route the traffic to the Internet Gateway if it does not match to our VPC table entry
 
-![alt_text](images/image69.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image69.png"/></p></div>
 
 Then click “Create”
 
-![alt_text](images/image54.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image54.png"/></p></div>
 
 5. You have successfully created a routing table for your public subnet
 
@@ -187,11 +187,11 @@ Then click “Create”
 Creating the security group for our EC2 instance:
 1. Go to “Security Groups” tab, and click on “Create Security Group”:
 
-![alt_text](images/image72.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image72.png"/></p></div>
 
 2. Enter a name, description, and our VPC:
 
-![alt_text](images/image25.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image25.png"/></p></div>
 
 3. Now we need to set up the outbound traffic:
 *   Outbound traffic defines what can be sent out from the subnet
@@ -200,7 +200,7 @@ Creating the security group for our EC2 instance:
 
 4. Select our Security Group, and click on the “Outbound Rules”:
 
-![alt_text](images/image26.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image26.png"/></p></div>
 
 5. It should already have it there
 
@@ -212,11 +212,11 @@ Creating the security group for our EC2 instance:
 
 7. Select our Security Group, click on the “Inbound Rules”, and click on “Edit Rules”:
 
-![alt_text](images/image37.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image37.png"/></p></div>
 
 8. Add an SSH entry for IP mask 0.0.0.0/0 (note that CIDR still plays a role in this):   
 
-![alt_text](images/image49.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image49.png"/></p></div>
 
 9. You have successfully made a security group for your public subnet
 
@@ -227,7 +227,7 @@ Creating the Security Group for RDS:
 *   A Network Access Control List is a firewall for the entire VPC (similar to security groups but for the entire VPC)
 *   Note that by creating a VPC, it has already created a Network Access Control List:
 
-![alt_text](images/image10.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image10.png"/></p></div>
 
 
 ## Step 2: Creating the Postgresql Database
@@ -242,30 +242,30 @@ A DB Subnet group is needed for any DB running on AWS.
 To create a DB subnet group:
 1. Go to services and type in “RDS”:
 
-![alt_text](images/image39.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image39.png"/></p></div>
 
 
 2. Go to Subnet Groups and click on “Create Subnet Group”:
 
-![alt_text](images/image2.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image2.png"/></p></div>
 
 3. Then specify the following:
 * The name of your DB subnet group
 * The two private subnets
 * It should look like this:
 
-![alt_text](images/image34.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image34.png"/></p></div>
 
 Then click “Create”
 
 #### 2. Create a DB instance:
 1. Go to services and type in “RDS”:
 
-![alt_text](images/image39.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image39.png"/></p></div>
 
 2. Then click on “Create Database”:
 
-![alt_text](images/image19.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image19.png"/></p></div>
 
 3. Next, we create our database by specifying the following:
 *   Database Creation Method: Easy Create
@@ -284,7 +284,7 @@ Then click on “Create”
 
 4. It take a while for the DB to be created. The page should look like this:
 
-![alt_text](images/image38.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image38.png"/></p></div>
 
 ## Step 3: Setting up the EC2 Instance:
 * Creating a web server involves creating an EC2 instance inside the public subnet
@@ -293,54 +293,54 @@ Then click on “Create”
 
 1. Go to services and type in “EC2”:
 
-![alt_text](images/image16.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image16.png"/></p></div>
 
 2. Go to the “EC2 dashboard” and select “Launch instance”:
 
-![alt_text](images/image63.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image63.png"/></p></div>
 
 
 3. Select the free tier Ubuntu 18:
 
-![alt_text](images/image42.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image42.png"/></p></div>
 
 4. Select the free tier for the instance type and click Next:
 
-![alt_text](images/image31.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image31.png"/></p></div>
 
 5. Set the VPC to our VPC, the subnet to the public subnet, and enable “auto assign public IP” (it should assign the public IP to the public IP in the Internet Gateway). Then click Next:
 
-![alt_text](images/image15.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image15.png"/></p></div>
 
 6. Click Next:
 
-![alt_text](images/image28.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image28.png"/></p></div>
 
 7. Click Next:
 
-![alt_text](images/image6.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image6.png"/></p></div>
 
 8. In this page, select our public security group that we made earlier:
 
-![alt_text](images/image8.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image8.png"/></p></div>
 
 9. Click “Review and Launch”:
 
-![alt_text](images/image65.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image65.png"/></p></div>
 
 10. We need to create an SSH key in order for us to access our EC2 instance. To do this, after clicking launch, it will ask us for an SSH key. Tell AWS to create it for us, and download the SSH key to your local machine:
 
-![alt_text](images/image11.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image11.png"/></p></div>
 
 Then click “Next”
 
 11. You should see this:
 
-![alt_text](images/image64.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image64.png"/></p></div>
 
 12. When you click on “View Instances”, it should show this page:
 
-![alt_text](images/image5.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image5.png"/></p></div>
 
 where your EC2 instance is initializing.
 
@@ -349,11 +349,11 @@ where your EC2 instance is initializing.
 
 1. First find your EC2 instance’s public IP address. It can be found in the EC2 page:
 
-![alt_text](images/image20.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image20.png"/></p></div>
 
 2. On your local machine, open up the terminal, change directories to the directory in which the key is stored, and reduce permissions on the SSH key by running the command:
 
-![alt_text](images/image45.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image45.png"/></p></div>
 
 3. SSH into the machine with the specified key pair by run the following command:
 
@@ -361,7 +361,7 @@ where your EC2 instance is initializing.
 ssh -i "UofT-Future-Course-Evals-EC2-SSH-Key.pem" ubuntu@100.25.29.215
 ```
 
-![alt_text](images/image18.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image18.png"/></p></div>
 
 ## Step 4: Installing the Web App**
 
@@ -374,20 +374,20 @@ We need to change it so that it only allows requests coming out from the EC2 ins
 Steps:
 1. Go to the Amazon console, search for “VPC”, and go to the “Security Groups” tab:
 
-![alt_text](images/image23.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image23.png"/></p></div>
 
 2. Click on the EC2’s security group, and go to the “Description” tab. \
 Copy its Group ID:
 
-![alt_text](images/image27.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image27.png"/></p></div>
 
 3. Next, click on the DB’s Security Group, select “Inbound Rules”, and select “Edit Rules”:
 
-![alt_text](images/image22.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image22.png"/></p></div>
 
 4. Then, create a new rule allowing any traffic to come from the EC2 instance:
 
-![alt_text](images/image59.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image59.png"/></p></div>
 
 5. You are done!
 
@@ -404,7 +404,7 @@ Steps:
 
 The page should look like this:
 
-![alt_text](images/image60.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image60.png"/></p></div>
 
 3. Now, in the terminal, SSH into your EC2 instance, and run the command:
         ```
@@ -413,12 +413,12 @@ The page should look like this:
 
 It should look like this:
 
-![alt_text](images/image55.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image55.png"/></p></div>
 
 4. Enter your credentials
 5. If it is successful, it should look like this:
 
-![alt_text](images/image41.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image41.png"/></p></div>
 
 6. Congratulations! You have successfully connected to your DB in your EC2 instance!
 
@@ -453,7 +453,7 @@ Steps:
 
 If successful, it should like this:     
 
-![alt_text](images/image29.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image29.png"/></p></div>
 
 3. SSH into your EC2 instance
 * Refer to previous steps on how to do this
@@ -467,7 +467,7 @@ on your EC2 instance
 
 So now when you access the DB and look at all the tables, it should have your tables:
 
-![alt_text](images/image67.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image67.png"/></p></div>
 
 5. You have finished migrating your local Postgresql DB to AWS
 
@@ -503,11 +503,11 @@ The solution:
 Steps:
 1. Go to the AWS console, search for “VPC”, select “Security Groups”, select your EC2’s Security Group, and edit the rules in the “Inbound Rules” tab:
 
-![alt_text](images/image33.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image33.png"/></p></div>
 
 2. Next, add a new rule allowing HTTPS to our web app:
 
-![alt_text](images/image52.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image52.png"/></p></div>
 
 3. Then save it.
 
@@ -519,15 +519,15 @@ Steps:
 
 #### 1. Go to the EC2 page:
 
-![alt_text](images/image7.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image7.png"/></p></div>
 
 2. Then, click on the “Load Balancers” tab and click on “Create Load Balancer”:
 
-![alt_text](images/image35.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image35.png"/></p></div>
 
 3. Next, specify that you want to make a **Classic Load Balancer**:
 
-![alt_text](images/image36.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image36.png"/></p></div>
 
 4. Set the:
 *   Name of the load balancer
@@ -536,39 +536,39 @@ Steps:
 *   The subnet (note that the subnet should be in the public subnet):
 The page looks like this:
 
-![alt_text](images/image62.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image62.png"/></p></div>
 
 5. Create a new security group of the LB with only HTTP allowed to enter inside the load balancer:
 
-![alt_text](images/image61.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image61.png"/></p></div>
 
 6. Set the Health Check:
 
-![alt_text](images/image17.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image17.png"/></p></div>
 
 7. Select our EC2 instance(s):
 
-![alt_text](images/image58.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image58.png"/></p></div>
 
 8. Finally, click “Create”:
 
-![alt_text](images/image48.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image48.png"/></p></div>
 
 9. Note that in order for the load balancer to work, it will need 10 successful health checks to our EC2 instance(s) for our load balancer to be “healthy”. Thus, in our load balancer config page it will show:
 
-![alt_text](images/image1.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image1.png"/></p></div>
 
 
 10. This will take around 10 minutes. Please wait while the load balancer registers 10 consecutive health checks to our EC2 instance
 11. Once the load balancer registers 10 consecutive health checks from our EC2 instance, it will change its status to “InService”:
 
-![alt_text](images/image13.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image13.png"/></p></div>
 
 12. Copy the load balancer’s DNS name on the load balancer’s description panel:
 
-![alt_text](images/image50.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image50.png"/></p></div>
 
 13. You can navigate to our load balancer by entering the load balancer’s DNS name on your browser:
 
-![alt_text](images/image32.png "image_tooltip")
+<div width="100%"><p align="center"><img src="images/image32.png"/></p></div>
 
