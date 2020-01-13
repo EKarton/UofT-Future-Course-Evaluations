@@ -50,6 +50,12 @@ After clicking the Update button on the Chrome Extension, it will update the cou
     </p>
 </div>
 
+Chrome Extension on the Chrome Web Store: [https://chrome.google.com/webstore/detail/uoft-timetable-course-rat/hkkijphcfllifpnmagnanfdonfemgoec?authuser=1](https://chrome.google.com/webstore/detail/uoft-timetable-course-rat/hkkijphcfllifpnmagnanfdonfemgoec?authuser=1)
+
+Live HTTP instance of Web Api on AWS: [http://uoft-future-course-evals-lb-1-756647563.us-east-1.elb.amazonaws.com/](http://uoft-future-course-evals-lb-1-756647563.us-east-1.elb.amazonaws.com/)
+
+Live HTTPS Proxied instance of Web Api on AWS: [http://uoft-project.herokuapp.com/](http://uoft-project.herokuapp.com/)
+
 ### Installation
 ##### Required Programs and Tools:
 - Local instance of Apache Spark
@@ -98,7 +104,7 @@ After clicking the Update button on the Chrome Extension, it will update the cou
 7. Reload the page
 8. Load some courses. It should now show the predicted course ratings.
 
-### Installation
+### Deploying on AWS
 - Refer to [Docs for AWS](docs/deployment-readme/README.md)
 
 ### Todo
