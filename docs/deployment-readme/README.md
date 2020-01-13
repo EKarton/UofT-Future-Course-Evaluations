@@ -412,71 +412,72 @@ It should look like this:
 
 #### Sub-Step 5. Migrate local database to database on AWS
 
-We will want to dump our contents from our local Postgresql instance to the Postgresql instance on AWS
+*  We will want to dump our contents from our local Postgresql instance to the Postgresql instance on AWS
 
-To do this, we will need to:
-*   Dump the entire local database to a file
-*   Send the file to our EC2 instance
-*   SSH into our EC2 instance
-*   Upload the file to our remote Postgresql database on AWS
+*  To do this, we will need to:
+    *   Dump the entire local database to a file
+    *   Send the file to our EC2 instance
+    *   SSH into our EC2 instance
+    *   Upload the file to our remote Postgresql database on AWS
 
-Steps:
-1. Dump the entire local database to a file:
-    1. First, ensure that your local database is running
-    2. Next, run the command:
+*  Steps:
+    1. Dump the entire local database to a file:
+        1.   First, ensure that your local database is running
+        2.   Next, run the command:
 
-        ```
-        pg_dump -U emiliokartono -O uoft_future_course_evaluations -f sourcedb.sql
-        ```
+                ```
+                pg_dump -U emiliokartono -O uoft_future_course_evaluations -f sourcedb.sql
+                ```
 
-        It will dump the entire database to a file called sourcedb.sql
+                It will dump the entire database to a file called sourcedb.sql
 
-2. Send the file to your EC2 instance using SCP
-* We do this with the scp command.
-* Run the command:
+    2. Send the file to your EC2 instance using SCP
+        * We do this with the scp command.
+        * Run the command:
 
-        ```
-        scp -i "UofT-Future-Course-Evals-EC2-SSH-Key.pem" sourcedb.sql ubuntu@100.25.29.215:”~/”
-        ```
+                ```
+                scp -i "UofT-Future-Course-Evals-EC2-SSH-Key.pem" sourcedb.sql ubuntu@100.25.29.215:”~/”
+                ```
 
-If successful, it should like this:     
+        * If successful, it should like this:     
 
-<div width="100%"><p align="center"><img src="images/image29.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image29.png" width="60%"/></p></div>
 
 3. SSH into your EC2 instance
-* Refer to previous steps on how to do this
+    * Refer to previous steps on how to do this
+
 4. Upload the file to our remote Postgresql database on AWS
-* To upload your file to your remote Postgresql database on AWS, run the command:
+    * To upload your file to your remote Postgresql database on AWS, run the command:
 
         ```
         psql -h uoft-future-course-evals-db.cmaqtpngmxxb.us-east-1.rds.amazonaws.com -p 5432 -d uoftcourseevals -U uoft < sourcedb.sql
         ```
-on your EC2 instance
+        on your EC2 instance
 
-So now when you access the DB and look at all the tables, it should have your tables:
+    * So now when you access the DB and look at all the tables, it should have your tables:
 
-<div width="100%"><p align="center"><img src="images/image67.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image67.png" width="60%"/></p></div>
 
 5. You have finished migrating your local Postgresql DB to AWS
 
 #### Sub-Step 6. Copy over the source files of your web app
-Easiest way is to clone the repository:
+*  Easiest way is to clone the repository:
 
-To do this:
-1. SSH into your EC2 instance and run the command:
+*  To do this:
+    1. SSH into your EC2 instance and run the command:
 
         ```
         git clone [https://github.com/EKarton/UofT-Future-Course-Evaluations.git](https://github.com/EKarton/UofT-Future-Course-Evaluations.git)
         ```
 
-2. Next, install pip3 by running the command:
-
+    2. Next, install pip3 by running the command:
+        
         ```
         sudo apt install python3-pip
         ```
 
-3. Then, change directories to the source folder, and install the requirements by running:
-
+    3. Then, change directories to the source folder, and install the requirements by running:
+        
         ```
         pip3 install -r requirements.txt
         ```
