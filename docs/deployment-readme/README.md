@@ -173,44 +173,43 @@ Then click “Create”
 *   What we want:
     *   We want to allow SSH traffic coming into our EC2 instance
 
-Creating the security group for our EC2 instance:
-1. Go to “Security Groups” tab, and click on “Create Security Group”:
+* Creating the security group for our EC2 instance:
+  1. Go to “Security Groups” tab, and click on “Create Security Group”:
 
 <div width="100%"><p align="center"><img src="images/image72.png" width="60%"/></p></div>
 
-2. Enter a name, description, and our VPC:
+  2. Enter a name, description, and our VPC:
 
 <div width="100%"><p align="center"><img src="images/image25.png" width="60%"/></p></div>
 
-3. Now we need to set up the outbound traffic:
-*   Outbound traffic defines what can be sent out from the subnet
-*   We want anything to come out from the subnet
-*   To do this, follow these:
+  3. Now we need to set up the outbound traffic:
+    *   Outbound traffic defines what can be sent out from the subnet
+    *   We want anything to come out from the subnet
+    *   Step 4-5 will do this
 
-4. Select our Security Group, and click on the “Outbound Rules”:
+  4. Select our Security Group, and click on the “Outbound Rules”:
 
 <div width="100%"><p align="center"><img src="images/image26.png" width="60%"/></p></div>
 
-5. It should already have it there
+  5. It should already have it there
 
-6. Now we need to set up the inbound traffic:
-*   Inbound traffic defines what internet traffic can enter our subnet
-*   We want only SSH from anywhere to enter our subnet (for now)
+  6. Now we need to set up the inbound traffic:
+    *   Inbound traffic defines what internet traffic can enter our subnet
+    *   We want only SSH from anywhere to enter our subnet (for now)
+    *   Steps 7-9 will do this
 
-            To do this follow the following:
-
-7. Select our Security Group, click on the “Inbound Rules”, and click on “Edit Rules”:
+  7. Select our Security Group, click on the “Inbound Rules”, and click on “Edit Rules”:
 
 <div width="100%"><p align="center"><img src="images/image37.png" width="60%"/></p></div>
 
-8. Add an SSH entry for IP mask 0.0.0.0/0 (note that CIDR still plays a role in this):   
+  8. Add an SSH entry for IP mask 0.0.0.0/0 (note that CIDR still plays a role in this):   
 
 <div width="100%"><p align="center"><img src="images/image49.png" width="60%"/></p></div>
 
-9. You have successfully made a security group for your public subnet
+  9. You have successfully made a security group for your public subnet
 
-Creating the Security Group for RDS:
-*   Same as creating a security group for EC2 but rename it differently
+* Creating the Security Group for RDS:
+    *   Same as creating a security group for EC2 but rename it differently
 
 #### Sub-Step 6. Creating the Network Access Control List:
 *   A Network Access Control List is a firewall for the entire VPC (similar to security groups but for the entire VPC)
