@@ -483,21 +483,21 @@ To do this:
 
 #### Sub-Step 7. Change security groups so that it accepts connections to the web app
 
-It is possible to run your app, but it will not be able to serve requests outside of your EC2
+*  It is possible to run your app, but it will not be able to serve requests outside of your EC2
 
-The solution:
+*  The solution:
     *  To add a whitelist to your EC2’s Security Group so that it accepts HTTPS requests to your Web App’s port
 
-Steps:
-1. Go to the AWS console, search for “VPC”, select “Security Groups”, select your EC2’s Security Group, and edit the rules in the “Inbound Rules” tab:
+*  Steps:
+    1. Go to the AWS console, search for “VPC”, select “Security Groups”, select your EC2’s Security Group, and edit the rules in the “Inbound Rules” tab:
 
-<div width="100%"><p align="center"><img src="images/image33.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image33.png" width="60%"/></p></div>
 
-2. Next, add a new rule allowing HTTPS to our web app:
+    2. Next, add a new rule allowing HTTPS to our web app:
 
-<div width="100%"><p align="center"><img src="images/image52.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image52.png" width="60%"/></p></div>
 
-3. Then save it.
+    3. Then save it.
 
 
 ## Step 5: Add a load balancer for your EC2:
