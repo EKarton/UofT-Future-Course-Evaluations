@@ -75,7 +75,7 @@
                     let firstNameInitials = tokenizedName[1].substring(1, tokenizedName[1].length - 1);
                     let abbrevInstructor = `${lastName} ${firstNameInitials}`;
 
-                    courseCodes.push(courseCode);
+                    courseCodes.push(courseCode[0]);
                     abbrevInstructors.push(abbrevInstructor);
                 }
             }

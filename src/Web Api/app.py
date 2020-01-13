@@ -191,7 +191,6 @@ def post_future_evals_in_bulk():
         return 'Number of courses and instructors must be the same', 400
 
     return handle_bulk_request(courses, instructors, abbrev_instructors)
-    
 
 @app.route('/api/bulk/evals/future', methods=['GET'])
 def get_future_evals_in_bulk():
