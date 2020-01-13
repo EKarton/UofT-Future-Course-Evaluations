@@ -155,14 +155,15 @@ To create the routing table for our public subnet:
 <div width="100%"><p align="center"><img src="images/image57.png" width="60%"/></p></div>
 
 
-4. Contrary to the private subnet, we need to allow the public subnet to reach the internet gateway. To do this, we need to make a new entry in the routing table mapping 0.0.0.0/0 (meaning to match any IP address) to the Internet Gateway
-*   Recall that in CIDR, it will match the longest prefix. Thus, 0.0.0.0/0 means that it will route the traffic to the Internet Gateway if it does not match to our VPC table entry
+4. Contrary to the private subnet, we need to allow the public subnet to reach the internet gateway. 
+    *   To do this, we need to make a new entry in the routing table mapping 0.0.0.0/0 (meaning to match any IP address) to the Internet Gateway
+    *   Recall that in CIDR, it will match the longest prefix. Thus, 0.0.0.0/0 means that it will route the traffic to the Internet Gateway if it does not match to our VPC table entry
 
-<div width="100%"><p align="center"><img src="images/image69.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image69.png" width="60%"/></p></div>
 
-Then click “Create”
+    * Then click “Create”
 
-<div width="100%"><p align="center"><img src="images/image54.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image54.png" width="60%"/></p></div>
 
 5. You have successfully created a routing table for your public subnet
 
@@ -174,42 +175,42 @@ Then click “Create”
     *   We want to allow SSH traffic coming into our EC2 instance
 
 * Creating the security group for our EC2 instance:
-  1. Go to “Security Groups” tab, and click on “Create Security Group”:
+    1. Go to “Security Groups” tab, and click on “Create Security Group”:
 
-<div width="100%"><p align="center"><img src="images/image72.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image72.png" width="60%"/></p></div>
 
-  2. Enter a name, description, and our VPC:
+    2. Enter a name, description, and our VPC:
 
-<div width="100%"><p align="center"><img src="images/image25.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image25.png" width="60%"/></p></div>
 
-  3. Now we need to set up the outbound traffic:
-    *   Outbound traffic defines what can be sent out from the subnet
-    *   We want anything to come out from the subnet
-    *   Step 4-5 will do this
+    3. Now we need to set up the outbound traffic:
+      *   Outbound traffic defines what can be sent out from the subnet
+      *   We want anything to come out from the subnet
+      *   Step 4-5 will do this
 
-  4. Select our Security Group, and click on the “Outbound Rules”:
+    4. Select our Security Group, and click on the “Outbound Rules”:
 
-<div width="100%"><p align="center"><img src="images/image26.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image26.png" width="60%"/></p></div>
 
-  5. It should already have it there
+    5. It should already have it there
 
-  6. Now we need to set up the inbound traffic:
-    *   Inbound traffic defines what internet traffic can enter our subnet
-    *   We want only SSH from anywhere to enter our subnet (for now)
-    *   Steps 7-9 will do this
+    6. Now we need to set up the inbound traffic:
+      *   Inbound traffic defines what internet traffic can enter our subnet
+      *   We want only SSH from anywhere to enter our subnet (for now)
+      *   Steps 7-9 will do this
 
-  7. Select our Security Group, click on the “Inbound Rules”, and click on “Edit Rules”:
+    7. Select our Security Group, click on the “Inbound Rules”, and click on “Edit Rules”:
 
-<div width="100%"><p align="center"><img src="images/image37.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image37.png" width="60%"/></p></div>
 
-  8. Add an SSH entry for IP mask 0.0.0.0/0 (note that CIDR still plays a role in this):   
+    8. Add an SSH entry for IP mask 0.0.0.0/0 (note that CIDR still plays a role in this):   
 
-<div width="100%"><p align="center"><img src="images/image49.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image49.png" width="60%"/></p></div>
 
   9. You have successfully made a security group for your public subnet
 
 * Creating the Security Group for RDS:
-    *   Same as creating a security group for EC2 but rename it differently
+    *   Same as creating a security group for EC2 but ignore adding the SSH entry, and rename the Security Group differently
 
 #### Sub-Step 6. Creating the Network Access Control List:
 *   A Network Access Control List is a firewall for the entire VPC (similar to security groups but for the entire VPC)
@@ -222,29 +223,29 @@ Then click “Create”
 
 * We need to create a RDS database to store the course ratings
 * To create a RDS database, we need to:
+
 #### Sub-Step 1. Create a DB Subnet Group:
-A DB Subnet group is a collection of subnets placed in a group
-* A minimum of two subnets needs to be placed in this group
-A DB Subnet group is needed for any DB running on AWS.
+* A DB Subnet group is a collection of subnets placed in a group
+    * A minimum of two subnets needs to be placed in this group
+* A DB Subnet group is needed for any DB running on AWS.
+* To create a DB subnet group:
 
-To create a DB subnet group:
-1. Go to services and type in “RDS”:
+    1. Go to services and type in “RDS”:
 
-<div width="100%"><p align="center"><img src="images/image39.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image39.png" width="60%"/></p></div>
 
+    2. Go to Subnet Groups and click on “Create Subnet Group”:
 
-2. Go to Subnet Groups and click on “Create Subnet Group”:
+        <div width="100%"><p align="center"><img src="images/image2.png" width="60%"/></p></div>
 
-<div width="100%"><p align="center"><img src="images/image2.png" width="60%"/></p></div>
+    3. Then specify the following:
+        *   The name of your DB subnet group
+        *   The two private subnets
+        *   It should look like this:
 
-3. Then specify the following:
-* The name of your DB subnet group
-* The two private subnets
-* It should look like this:
+        <div width="100%"><p align="center"><img src="images/image34.png" width="60%"/></p></div>
 
-<div width="100%"><p align="center"><img src="images/image34.png" width="60%"/></p></div>
-
-Then click “Create”
+        *   Then click “Create”
 
 #### Sub-Step 2. Create a DB instance:
 1. Go to services and type in “RDS”:
@@ -255,20 +256,21 @@ Then click “Create”
 
 <div width="100%"><p align="center"><img src="images/image19.png" width="60%"/></p></div>
 
-3. Next, we create our database by specifying the following:
-*   Database Creation Method: Easy Create
-*   Engine Type: Postgresql
-*   DB Instance Type: Free Tier
-*   DB instance name: UofT-Future-Course-Evals-DB
-*   Master username: uoft
-*   Master password: any
-*   VPC: our VPC
-*   Subnet group: the DB Subnet group we made
-*   Publically Accessible: no
-*   Security Group: the security group for our RDS
-*   Initial Database Name: uoftcourseevals
+3. Next, we create our database:
+  * We first specifying the following:
+    *   Database Creation Method: Easy Create
+    *   Engine Type: Postgresql
+    *   DB Instance Type: Free Tier
+    *   DB instance name: UofT-Future-Course-Evals-DB
+    *   Master username: uoft
+    *   Master password: any
+    *   VPC: our VPC
+    *   Subnet group: the DB Subnet group we made
+    *   Publically Accessible: no
+    *   Security Group: the security group for our RDS
+    *   Initial Database Name: uoftcourseevals
 
-Then click on “Create”
+  *  Then click on “Create”
 
 4. It take a while for the DB to be created. The page should look like this:
 
@@ -286,7 +288,6 @@ Then click on “Create”
 2. Go to the “EC2 dashboard” and select “Launch instance”:
 
 <div width="100%"><p align="center"><img src="images/image63.png" width="60%"/></p></div>
-
 
 3. Select the free tier Ubuntu 18:
 
@@ -332,7 +333,6 @@ Then click “Next”
 
 where your EC2 instance is initializing.
 
-
 #### Sub-Step 2. SSH Into your EC2 instance:**
 
 1. First find your EC2 instance’s public IP address. It can be found in the EC2 page:
@@ -345,41 +345,41 @@ where your EC2 instance is initializing.
 
 3. SSH into the machine with the specified key pair by run the following command:
 
-```
-ssh -i "UofT-Future-Course-Evals-EC2-SSH-Key.pem" ubuntu@100.25.29.215
-```
+        ```
+        ssh -i "UofT-Future-Course-Evals-EC2-SSH-Key.pem" ubuntu@100.25.29.215
+        ```
 
 <div width="100%"><p align="center"><img src="images/image18.png" width="60%"/></p></div>
 
 ## Step 4: Installing the Web App**
 
-#### Sub-Step Allow access from EC2 to Postgres:
-Currently, the security group for our database does not accept any incoming requests
+#### Sub-Step 3. Allow access from EC2 to Postgres:
+*  Currently, the security group for our database does not accept any incoming requests
 
-We need to change it so that it only allows requests coming out from the EC2 instance
-* We do this by adding a new incoming rule in the DB’s security group so that it allows any traffic coming from the EC2’s security group
+*  We need to change it so that it only allows requests coming out from the EC2 instance
+    * We do this by adding a new incoming rule in the DB’s security group so that it allows any traffic coming from the EC2’s security group
 
-Steps:
-1. Go to the Amazon console, search for “VPC”, and go to the “Security Groups” tab:
+*  Steps:
+    1. Go to the Amazon console, search for “VPC”, and go to the “Security Groups” tab:
 
-<div width="100%"><p align="center"><img src="images/image23.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image23.png" width="60%"/></p></div>
 
-2. Click on the EC2’s security group, and go to the “Description” tab. \
+    2. Click on the EC2’s security group, and go to the “Description” tab.
 Copy its Group ID:
+        
+        <div width="100%"><p align="center"><img src="images/image27.png" width="60%"/></p></div>
 
-<div width="100%"><p align="center"><img src="images/image27.png" width="60%"/></p></div>
+    3. Next, click on the DB’s Security Group, select “Inbound Rules”, and select “Edit Rules”:
 
-3. Next, click on the DB’s Security Group, select “Inbound Rules”, and select “Edit Rules”:
+        <div width="100%"><p align="center"><img src="images/image22.png" width="60%"/></p></div>
 
-<div width="100%"><p align="center"><img src="images/image22.png" width="60%"/></p></div>
+    4. Then, create a new rule allowing any traffic to come from the EC2 instance:
 
-4. Then, create a new rule allowing any traffic to come from the EC2 instance:
+        <div width="100%"><p align="center"><img src="images/image59.png" width="60%"/></p></div>
 
-<div width="100%"><p align="center"><img src="images/image59.png" width="60%"/></p></div>
+    5. You are done!
 
-5. You are done!
-
-#### Sub-Step Install the Postgresql Client:
+#### Sub-Step 4. Install the Postgresql Client:
 
 We need to do this so that our EC2 instance can connect to our database
 
@@ -410,7 +410,7 @@ It should look like this:
 
 6. Congratulations! You have successfully connected to your DB in your EC2 instance!
 
-#### Sub-Step Migrate local database to database on AWS
+#### Sub-Step 5. Migrate local database to database on AWS
 
 We will want to dump our contents from our local Postgresql instance to the Postgresql instance on AWS
 
@@ -459,7 +459,7 @@ So now when you access the DB and look at all the tables, it should have your ta
 
 5. You have finished migrating your local Postgresql DB to AWS
 
-#### Sub-Step Copy over the source files of your web app
+#### Sub-Step 6. Copy over the source files of your web app
 Easiest way is to clone the repository:
 
 To do this:
@@ -481,7 +481,7 @@ To do this:
         pip3 install -r requirements.txt
         ```
 
-#### Sub-Step Change security groups so that it accepts connections to the web app
+#### Sub-Step 7. Change security groups so that it accepts connections to the web app
 
 It is possible to run your app, but it will not be able to serve requests outside of your EC2
 
@@ -499,64 +499,68 @@ Steps:
 
 3. Then save it.
 
+
 ## Step 5: Add a load balancer for your EC2:
 
 *   We wanna make a load balancer for our EC2 so it can handle many requests
     *   This is only beneficial if we have more than one EC2 instance
 *   To do this we need to:
 
-#### Sub-Step 1. Go to the EC2 page:
+#### Sub-Step 1. Adding a load balancer:
+*  Steps:
+    1. Go to the EC2 page:
 
-<div width="100%"><p align="center"><img src="images/image7.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image7.png" width="60%"/></p></div>
 
-2. Then, click on the “Load Balancers” tab and click on “Create Load Balancer”:
+    2. Then, click on the “Load Balancers” tab and click on “Create Load Balancer”:
 
-<div width="100%"><p align="center"><img src="images/image35.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image35.png" width="60%"/></p></div>
 
-3. Next, specify that you want to make a **Classic Load Balancer**:
+    3. Next, specify that you want to make a **Classic Load Balancer**:
 
-<div width="100%"><p align="center"><img src="images/image36.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image36.png" width="60%"/></p></div>
 
-4. Set the:
-*   Name of the load balancer
-*   The port in the EC2 instance(s)
-*   The VPC
-*   The subnet (note that the subnet should be in the public subnet):
-The page looks like this:
+    4. Set the:
+        *   Name of the load balancer
+        *   The port in the EC2 instance(s)
+        *   The VPC
+        *   The subnet (note that the subnet should be in the public subnet):
+       The page looks like this:
 
-<div width="100%"><p align="center"><img src="images/image62.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image62.png" width="60%"/></p></div>
 
-5. Create a new security group of the LB with only HTTP allowed to enter inside the load balancer:
+    5. Create a new security group of the LB with only HTTP allowed to enter inside the load balancer:
 
-<div width="100%"><p align="center"><img src="images/image61.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image61.png" width="60%"/></p></div>
 
-6. Set the Health Check:
+    6. Set the Health Check:
 
-<div width="100%"><p align="center"><img src="images/image17.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image17.png" width="60%"/></p></div>
 
-7. Select our EC2 instance(s):
+    7. Select our EC2 instance(s):
 
-<div width="100%"><p align="center"><img src="images/image58.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image58.png" width="60%"/></p></div>
 
-8. Finally, click “Create”:
+    8. Finally, click “Create”:
 
-<div width="100%"><p align="center"><img src="images/image48.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image48.png" width="60%"/></p></div>
 
-9. Note that in order for the load balancer to work, it will need 10 successful health checks to our EC2 instance(s) for our load balancer to be “healthy”. Thus, in our load balancer config page it will show:
+    9. Note that in order for the load balancer to work, it will need 10 successful health checks to our EC2 instance(s) for our load balancer to be “healthy”. Thus, in our load balancer config page it will show:
 
-<div width="100%"><p align="center"><img src="images/image1.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image1.png" width="60%"/></p></div>
 
 
-10. This will take around 10 minutes. Please wait while the load balancer registers 10 consecutive health checks to our EC2 instance
-11. Once the load balancer registers 10 consecutive health checks from our EC2 instance, it will change its status to “InService”:
+    10. This will take around 10 minutes. Please wait while the load balancer registers 10 consecutive health checks to our EC2 instance
+    
+    11. Once the load balancer registers 10 consecutive health checks from our EC2 instance, it will change its status to “InService”:
 
-<div width="100%"><p align="center"><img src="images/image13.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image13.png" width="60%"/></p></div>
 
-12. Copy the load balancer’s DNS name on the load balancer’s description panel:
+    12. Copy the load balancer’s DNS name on the load balancer’s description panel:
 
-<div width="100%"><p align="center"><img src="images/image50.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image50.png" width="60%"/></p></div>
 
-13. You can navigate to our load balancer by entering the load balancer’s DNS name on your browser:
+    13. You can navigate to our load balancer by entering the load balancer’s DNS name on your browser:
 
-<div width="100%"><p align="center"><img src="images/image32.png" width="60%"/></p></div>
+        <div width="100%"><p align="center"><img src="images/image32.png" width="60%"/></p></div>
 
