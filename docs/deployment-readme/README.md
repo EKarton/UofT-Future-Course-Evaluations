@@ -1,6 +1,11 @@
 # Deploying to AWS:
 
 ## Introduction:
+We are going to deploy our App onto AWS
+* It will be made up of EC2s, load balancers, and RDs
+* The system architecture:
+    <div width="100%"><p align="center"><img src="images/AWS-Architecture.png" width="60%"/></p></div>
+
 Deploying the app to AWS involves various steps:
 1. Setting up the VPC
 2. Setting up a Postgresql
