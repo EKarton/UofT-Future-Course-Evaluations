@@ -1,9 +1,9 @@
 
 # ML libraries
-# from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-# import tensorflow as tf
-# from tensorflow import keras
+import tensorflow as tf
+from tensorflow import keras
 
 import numpy as np
 
@@ -237,17 +237,17 @@ if __name__ == '__main__':
     password = os.getenv("DB_PASSWORD")
     app_port = os.getenv("APP_PORT")
     
-    # instructors_table = InstructorsTable(host, port, db_name, user, password)
-    # instructors_table.start()
+    instructors_table = InstructorsTable(host, port, db_name, user, password)
+    instructors_table.start()
 
-    # # Load the ML model
-    # modelfile = '../ML Model/saved-model.h5'
-    # model = keras.models.load_model(modelfile)
+    # Load the ML model
+    modelfile = '../ML Model/saved-model.h5'
+    model = keras.models.load_model(modelfile)
 
-    # input_encoder_file = '../ML Model/saved-input-encoder.pkl'
-    # input_encoder = p.load(open(input_encoder_file, 'rb'))
+    input_encoder_file = '../ML Model/saved-input-encoder.pkl'
+    input_encoder = p.load(open(input_encoder_file, 'rb'))
 
-    # output_scaler_file = '../ML Model/saved-output-scalar.pkl'
-    # output_scaler = p.load(open(output_scaler_file, 'rb'))
+    output_scaler_file = '../ML Model/saved-output-scalar.pkl'
+    output_scaler = p.load(open(output_scaler_file, 'rb'))
 
     app.run(debug=True, host='0.0.0.0', port=app_port)
