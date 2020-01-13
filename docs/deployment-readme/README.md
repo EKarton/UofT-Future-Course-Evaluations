@@ -3,25 +3,6 @@
 ## Introduction:
 Deploying the app to AWS involves various steps:
 1. Setting up the VPC
-2. Setting up the Postgresql Database
-3. Setting up the EC2 instance
-4. Setting up the app
-5. Adding a load balancer
-
-## Step 1: Setting up the VPC:
-A VPC is comprised of a collection of subnets, route tables, internet gateways, and security groups. Our VPC will consist of:
-- Two public subnets attached to a common public route table
-- Two private subnets attached to a common private route table
-- A security group for our database (to protect our database from unwanted traffic)
-- A security group for our EC2 instance (to protect our EC2 instance from unwanted traffic)
-- An internet gateway (to allow our EC2 instance to talk to the internet)
-- A Network Access Control List (to protect our VPC from unwanted traffic)
-
-
-## Deploying UofT Future Course Evaluations to AWS**
-
-It involves:
-1. Setting up the VPC
 2. Setting up a Postgresql
 3. Setting up an EC2 instance
 4. Setting up the app
@@ -31,7 +12,15 @@ It involves:
 
 * This is about creating a VPC so that we have our own private network
 
-#### 1. To create a VPC:
+* A VPC is comprised of a collection of subnets, route tables, internet gateways, and security groups. Our VPC will consist of:
+    *  Two public subnets attached to a common public route table
+    * Two private subnets attached to a common private route table
+    * A security group for our database (to protect our database from unwanted traffic)
+    * A security group for our EC2 instance (to protect our EC2 instance from unwanted traffic)
+    * An internet gateway (to allow our EC2 instance to talk to the internet)
+    * A Network Access Control List (to protect our VPC from unwanted traffic)
+
+#### Sub-Step 1. To create a VPC:
         
 1. Type in VPC in the search bar:
 
@@ -48,7 +37,7 @@ It involves:
 
 4. Then click “create”. You have made your VPC
 
-#### 2. Creating subnets
+#### Sub-Step 2. Creating subnets
 *   To set up the internal and external parts of the VPC, we need to make subnets
     *   Subnets further divide the VPC
 *   We need to make these subnets:
@@ -82,7 +71,7 @@ It involves:
 
 3. You have made your public subnet
 
-#### 3. Creating the Internet Gateway
+#### Sub-Step 3. Creating the Internet Gateway
 *   This is important since it allows your public subnet to be connected to the internet.
 *   To create an internet gateway:
 1. Go to “Internet Gateways” and click on “Create internet gateway”:
@@ -112,7 +101,7 @@ It involves:
 <div width="100%"><p align="center"><img src="images/image71.png" width="60%"/></p></div>
 
 
-#### 4. Creating routing tables
+#### Sub-Step 4. Creating routing tables
 What is a Routing Table?
 *   Routing tables is needed so that instances running in different subnets can talk to each other.
 *   Moreover, it defines which subnets are allowed to talk to the Internet Gateway and back
@@ -177,7 +166,7 @@ Then click “Create”
 
 5. You have successfully created a routing table for your public subnet
 
-#### 5. Creating security groups
+#### Sub-Step 5. Creating security groups
 *   What are security groups?
     *   A way to whitelist traffic entering in and out of the subnet by examining each packet and its type
     *   They are applied to instances (ex: EC2s, RDS, etc)
@@ -223,7 +212,7 @@ Creating the security group for our EC2 instance:
 Creating the Security Group for RDS:
 *   Same as creating a security group for EC2 but rename it differently
 
-#### 6. Creating the Network Access Control List:
+#### Sub-Step 6. Creating the Network Access Control List:
 *   A Network Access Control List is a firewall for the entire VPC (similar to security groups but for the entire VPC)
 *   Note that by creating a VPC, it has already created a Network Access Control List:
 
@@ -234,7 +223,7 @@ Creating the Security Group for RDS:
 
 * We need to create a RDS database to store the course ratings
 * To create a RDS database, we need to:
-#### 1. Create a DB Subnet Group:
+#### Sub-Step 1. Create a DB Subnet Group:
 A DB Subnet group is a collection of subnets placed in a group
 * A minimum of two subnets needs to be placed in this group
 A DB Subnet group is needed for any DB running on AWS.
@@ -258,7 +247,7 @@ To create a DB subnet group:
 
 Then click “Create”
 
-#### 2. Create a DB instance:
+#### Sub-Step 2. Create a DB instance:
 1. Go to services and type in “RDS”:
 
 <div width="100%"><p align="center"><img src="images/image39.png" width="60%"/></p></div>
@@ -289,7 +278,7 @@ Then click on “Create”
 ## Step 3: Setting up the EC2 Instance:
 * Creating a web server involves creating an EC2 instance inside the public subnet
 
-#### 1. Creating the EC2 Instance:**
+#### Sub-Step 1. Creating the EC2 Instance:**
 
 1. Go to services and type in “EC2”:
 
@@ -345,7 +334,7 @@ Then click “Next”
 where your EC2 instance is initializing.
 
 
-#### 2. SSH Into your EC2 instance:**
+#### Sub-Step 2. SSH Into your EC2 instance:**
 
 1. First find your EC2 instance’s public IP address. It can be found in the EC2 page:
 
@@ -365,7 +354,7 @@ ssh -i "UofT-Future-Course-Evals-EC2-SSH-Key.pem" ubuntu@100.25.29.215
 
 ## Step 4: Installing the Web App**
 
-#### Allow access from EC2 to Postgres:
+#### Sub-Step Allow access from EC2 to Postgres:
 Currently, the security group for our database does not accept any incoming requests
 
 We need to change it so that it only allows requests coming out from the EC2 instance
@@ -391,7 +380,7 @@ Copy its Group ID:
 
 5. You are done!
 
-#### Install the Postgresql Client:
+#### Sub-Step Install the Postgresql Client:
 
 We need to do this so that our EC2 instance can connect to our database
 
@@ -422,7 +411,7 @@ It should look like this:
 
 6. Congratulations! You have successfully connected to your DB in your EC2 instance!
 
-#### Migrate local database to database on AWS
+#### Sub-Step Migrate local database to database on AWS
 
 We will want to dump our contents from our local Postgresql instance to the Postgresql instance on AWS
 
@@ -471,7 +460,7 @@ So now when you access the DB and look at all the tables, it should have your ta
 
 5. You have finished migrating your local Postgresql DB to AWS
 
-#### Copy over the source files of your web app
+#### Sub-Step Copy over the source files of your web app
 Easiest way is to clone the repository:
 
 To do this:
@@ -493,7 +482,7 @@ To do this:
         pip3 install -r requirements.txt
         ```
 
-#### Change security groups so that it accepts connections to the web app
+#### Sub-Step Change security groups so that it accepts connections to the web app
 
 It is possible to run your app, but it will not be able to serve requests outside of your EC2
 
@@ -517,7 +506,7 @@ Steps:
     *   This is only beneficial if we have more than one EC2 instance
 *   To do this we need to:
 
-#### 1. Go to the EC2 page:
+#### Sub-Step 1. Go to the EC2 page:
 
 <div width="100%"><p align="center"><img src="images/image7.png" width="60%"/></p></div>
 
