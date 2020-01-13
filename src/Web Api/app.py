@@ -1,9 +1,9 @@
 
 # ML libraries
-from __future__ import absolute_import, division, print_function, unicode_literals
+# from __future__ import absolute_import, division, print_function, unicode_literals
 
-import tensorflow as tf
-from tensorflow import keras
+# import tensorflow as tf
+# from tensorflow import keras
 
 import numpy as np
 
@@ -16,6 +16,7 @@ from instructors_table import InstructorsTable
 from flask import Flask, request, redirect, url_for, flash, jsonify
 import pickle as p
 import json
+import base64
 
 import os
 from dotenv import load_dotenv
@@ -123,36 +124,7 @@ def get_future_evals():
     except:
         return 'Rating with course ' + course + ' with instructor ' + instructor + ' cannot be determined', 400
 
-@app.route('/api/bulk/evals/future', methods=['GET'])
-def get_future_evals_in_bulk():
-    courses = None
-    instructors = None
-    abbrev_instructors = None
-
-    if 'courses' in request.args:
-        courses = request.args.get('courses').split(',')
-
-    if 'instructors' in request.args:
-        instructors = request.args.get('instructors').split(',')
-
-    elif 'abbrev_instructors' in request.args:
-        abbrev_instructors = request.args.get('abbrev_instructors').split(',')
-
-    if courses is None:
-        return 'Must include \'courses\' in the query string', 400
-    
-    if instructors is None and abbrev_instructors is None:
-        return 'Must include either \'instructor\' or \'abbrev_instructors\' in query string', 400
-
-    print(abbrev_instructors, instructors)
-    print(courses)
-
-    if instructors is not None and len(courses) != len(instructors):
-        return 'Number of courses and instructors must be the same', 400
-    
-    if abbrev_instructors is not None and len(courses) != len(abbrev_instructors):
-        return 'Number of courses and instructors must be the same', 400
-
+def handle_bulk_request(courses, instructors, abbrev_instructors):
     results = []
     for i in range(len(courses)):
         course = courses[i]
@@ -188,6 +160,68 @@ def get_future_evals_in_bulk():
 
     return jsonify(results), 200
 
+@app.route('/api/v2/bulk/evals/future', methods=['POST'])
+def post_future_evals_in_bulk():
+    courses = None
+    instructors = None
+    abbrev_instructors = None
+
+    json_object = request.get_json()
+    if json_object is not None:
+
+        if 'courses' in json_object:
+            courses = json_object['courses']
+
+        if 'instructors' in json_object:
+            instructors = json_object['instructors']
+
+        if 'abbrev_instructors' in json_object:
+            abbrev_instructors = json_object['abbrev_instructors']
+
+    if courses is None:
+        return 'Must include \'courses\' in the JSON body', 400
+    
+    if instructors is None and abbrev_instructors is None:
+        return 'Must include either \'instructor\' or \'abbrev_instructors\' in JSON body', 400
+
+    if instructors is not None and len(courses) != len(instructors):
+        return 'Number of courses and instructors must be the same', 400
+    
+    if abbrev_instructors is not None and len(courses) != len(abbrev_instructors):
+        return 'Number of courses and instructors must be the same', 400
+
+    return handle_bulk_request(courses, instructors, abbrev_instructors)
+    
+
+@app.route('/api/bulk/evals/future', methods=['GET'])
+def get_future_evals_in_bulk():
+    courses = None
+    instructors = None
+    abbrev_instructors = None
+
+    if 'courses' in request.args:
+        courses = request.args.get('courses').split(',')
+
+    if 'instructors' in request.args:
+        instructors = request.args.get('instructors').split(',')
+
+    elif 'abbrev_instructors' in request.args:
+        abbrev_instructors = request.args.get('abbrev_instructors').split(',')
+
+    if courses is None:
+        return 'Must include \'courses\' in the query string', 400
+    
+    if instructors is None and abbrev_instructors is None:
+        return 'Must include either \'instructor\' or \'abbrev_instructors\' in query string', 400
+
+    if instructors is not None and len(courses) != len(instructors):
+        return 'Number of courses and instructors must be the same', 400
+    
+    if abbrev_instructors is not None and len(courses) != len(abbrev_instructors):
+        return 'Number of courses and instructors must be the same', 400
+
+    return handle_bulk_request(courses, instructors, abbrev_instructors)
+
 @app.route('/api/status', methods=['GET'])
 def get_status():
     return 'OK', 200
@@ -204,17 +238,17 @@ if __name__ == '__main__':
     password = os.getenv("DB_PASSWORD")
     app_port = os.getenv("APP_PORT")
     
-    instructors_table = InstructorsTable(host, port, db_name, user, password)
-    instructors_table.start()
+    # instructors_table = InstructorsTable(host, port, db_name, user, password)
+    # instructors_table.start()
 
-    # Load the ML model
-    modelfile = '../ML Model/saved-model.h5'
-    model = keras.models.load_model(modelfile)
+    # # Load the ML model
+    # modelfile = '../ML Model/saved-model.h5'
+    # model = keras.models.load_model(modelfile)
 
-    input_encoder_file = '../ML Model/saved-input-encoder.pkl'
-    input_encoder = p.load(open(input_encoder_file, 'rb'))
+    # input_encoder_file = '../ML Model/saved-input-encoder.pkl'
+    # input_encoder = p.load(open(input_encoder_file, 'rb'))
 
-    output_scaler_file = '../ML Model/saved-output-scalar.pkl'
-    output_scaler = p.load(open(output_scaler_file, 'rb'))
+    # output_scaler_file = '../ML Model/saved-output-scalar.pkl'
+    # output_scaler = p.load(open(output_scaler_file, 'rb'))
 
     app.run(debug=True, host='0.0.0.0', port=app_port)
