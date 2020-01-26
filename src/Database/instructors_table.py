@@ -12,11 +12,13 @@ class InstructorsTable(Database):
                     abbrev_instructor_name VARCHAR(250) NOT NULL
                 );"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql)
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
 
     def insert_instructor_if_not_exist(self, full_instructor_name, abbrev_instructor_name):
         existing_instructor_id = self.get_instructor_id(full_instructor_name, abbrev_instructor_name)
@@ -27,11 +29,13 @@ class InstructorsTable(Database):
         sql = """INSERT INTO instructors (full_instructor_name, abbrev_instructor_name) 
                  VALUES (%s, %s);"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (full_instructor_name, abbrev_instructor_name))
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
 
         return self.get_instructor_id(full_instructor_name, abbrev_instructor_name)
 
@@ -40,7 +44,8 @@ class InstructorsTable(Database):
                         FROM instructors 
                         WHERE full_instructor_name = %s AND abbrev_instructor_name = %s;"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (full_instructor_name, abbrev_instructor_name))
 
         instructor_id = None
@@ -49,6 +54,8 @@ class InstructorsTable(Database):
             instructor_id = row[0]
 
         cursor.close()
+        self.put_back_connection(connection)
+
         return instructor_id
 
     def get_instructor_details(self, instructor_id):
@@ -56,7 +63,8 @@ class InstructorsTable(Database):
                         FROM instructors 
                         WHERE instructor_id = %s;"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (instructor_id, ))
 
         result = None
@@ -68,4 +76,6 @@ class InstructorsTable(Database):
             result = (full_instructor_name, abbrev_instructor_name)
 
         cursor.close()
+        self.put_back_connection(connection)
+        
         return result

@@ -12,11 +12,13 @@ class DeptsTable(Database):
                     dept_code VARCHAR(250) NOT NULL
                 );"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql)
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
 
     def insert_dept_if_not_exists(self, dept_code):
         existing_dept_id = self.get_dept_id(dept_code)
@@ -27,11 +29,14 @@ class DeptsTable(Database):
         sql = """INSERT INTO depts (dept_code) 
                 VALUES (%s);"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (dept_code, ))
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
+
         return self.get_dept_id(dept_code)
 
     def get_dept_id(self, dept_code):
@@ -39,7 +44,8 @@ class DeptsTable(Database):
                         FROM depts
                         WHERE dept_code = %s;"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (dept_code, ))
 
         dept_id = None
@@ -48,5 +54,7 @@ class DeptsTable(Database):
             dept_id = row[0]
 
         cursor.close()
+        self.put_back_connection(connection)
+        
         return dept_id
 

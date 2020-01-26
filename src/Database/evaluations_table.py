@@ -24,18 +24,22 @@ class EvaluationsTable(Database):
                     num_invited INTEGER NOT NULL
                 );"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql)
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
 
     def insert_evaluation(self, dept_id, course_id, session_id, instructor_id, cat_1, cat_2, cat_3, cat_4, cat_5, cat_6, cat_7, cat_8, num_responded, num_invited):
         sql = """INSERT INTO evaluations (dept_id, course_id, session_id, instructor_id, cat_1, cat_2, cat_3, cat_4, cat_5, cat_6, cat_7, cat_8, num_responded, num_invited) 
                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (dept_id, course_id, session_id, instructor_id, cat_1, cat_2, cat_3, cat_4, cat_5, cat_6, cat_7, cat_8, num_responded, num_invited))
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)

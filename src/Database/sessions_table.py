@@ -12,11 +12,13 @@ class SessionsTable(Database):
                     year INTEGER NOT NULL
                 );"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql)
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
 
     def insert_session_if_not_exists(self, term, year):
         existing_session_id = self.get_session_id(term, year)
@@ -27,11 +29,13 @@ class SessionsTable(Database):
         sql = """INSERT INTO sessions (term, year) 
                  VALUES (%s, %s);"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (term, year))
         cursor.close()
 
-        self.connection.commit()
+        connection.commit()
+        self.put_back_connection(connection)
 
         return self.get_session_id(term, year)
 
@@ -40,7 +44,8 @@ class SessionsTable(Database):
                         FROM sessions 
                         WHERE term = %s AND year = %s;"""
 
-        cursor = self.connection.cursor()
+        connection = self.get_connection()
+        cursor = connection.cursor()
         cursor.execute(sql, (term, year))
 
         session_id = None
@@ -49,4 +54,6 @@ class SessionsTable(Database):
             session_id = row[0]
 
         cursor.close()
+        self.put_back_connection(connection)
+        
         return session_id
