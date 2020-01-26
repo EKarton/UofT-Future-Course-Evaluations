@@ -236,6 +236,9 @@ if __name__ == '__main__':
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
     app_port = os.getenv("APP_PORT")
+
+    # See if it is a debugger
+    is_debugging_on = os.getenv("ENABLE_APP_DEBUGGER") == 'True'
     
     instructors_table = InstructorsTable(host, port, db_name, user, password)
     instructors_table.start()
@@ -250,4 +253,4 @@ if __name__ == '__main__':
     output_scaler_file = '../ML Model/saved-output-scalar.pkl'
     output_scaler = p.load(open(output_scaler_file, 'rb'))
 
-    app.run(debug=True, host='0.0.0.0', port=app_port)
+    app.run(debug=is_debugging_on, host='0.0.0.0', port=app_port)
