@@ -89,10 +89,10 @@ Live HTTPS Proxied instance of Web Api on AWS: [http://uoft-project.herokuapp.co
 ##### Step 4: Train the ML model
 1. In the **ML Model** folder, run the command ```python3 ml.py```
 
-##### Step 5: Run the Web API
-1. In the **Web Api** folder, copy the file *.env-template*, and rename the copied file to *.env*.
+##### Step 5: Run the Web App
+1. In the **Web App** folder, copy the file *.env-template*, and rename the copied file to *.env*.
 2. In the *.env* file, replace the contents to your DB credentials with **READ** permissions
-3. In the **Web Api** folder, run the command ```python3 app.py```
+3. In the **Web App** folder, run the command ```python3 app.py```
 
 ##### Step 6: Running the Chrome Extension:
 1. Open Google Chrome **without web security** (to disable CORs)
