@@ -13,7 +13,7 @@ sys.path.append('../Database')
 from instructors_table import InstructorsTable
 
 # Web app libraries
-from flask import Flask, request, redirect, url_for, flash, jsonify
+from flask import Flask, request, redirect, url_for, flash, jsonify, render_template
 import pickle as p
 import json
 import base64
@@ -330,6 +330,10 @@ def get_future_evals_in_bulk():
 @app.route('/api/status', methods=['GET'])
 def get_status():
     return 'OK', 200
+
+@app.route('/evals/future', methods=['GET'])
+def get_future_evals_page():
+    return render_template('future-evals.html')
 
 if __name__ == '__main__':
     # Load credentials from the .env file
