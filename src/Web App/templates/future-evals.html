@@ -17,7 +17,7 @@
         const courseCode = "CSC148H1";
         // const prof = "David Liu";
         const url = "http://localhost:8080/api/v1/evals/past";
-        const termToMonth = { 'Winter': 0, 'Summer': 5, 'Fall': 9 };
+        const termToMonth = { 'Winter': 0, 'Summer': 4, 'Fall': 8 };
 
         axios.get(url, { params: {course_code: courseCode } })
             .then(data => {
@@ -36,17 +36,58 @@
                     };
                 });
 
-                console.log(responseData);
-
                 // Sort them based on their session
+                responseData = responseData.sort((a, b) => {
+                    return a.session.date - b.session.date;
+                });
 
                 // We then want to grab each unique sessions and sort the sessions
+                let sessions = responseData.reduce((sessions, record) => {
+                    if (sessions.length == 0 || sessions[sessions.length-1].date < record.session.date) {
+                        sessions.push(record.session);
+                    }
+                    return sessions;
+                }, []);
 
-                // We then want to grab each unique instructor
+                // Then we want to group records based on their instructors
+                responseData = responseData.reduce((groups, record) => {
+                    let instructor = record.instructor;
+                        
+                    if (!groups.has(instructor)) {
+                        groups.set(instructor, []);
+                    }
+                    groups.get(instructor).push(record);
 
-                // Then we want to group ratings based on their instructors
+                    return groups;
 
-                // Then for each instructor we want to combine ratings from the same session
+                }, new Map());
+
+                // Then foreach instructor, we want to group ratings based on their session
+                responseData = Array.from(responseData.keys()).reduce((groups, instructor) => {
+
+                    let data = groups.get(instructor);
+                    let sessionGroups = data.reduce((sessionGroups, record) => {
+                        
+                        let session = record.session.text;
+
+                        if (!sessionGroups.has(session)) {
+                            sessionGroups.set(session, []);
+                        }
+
+                        sessionGroups.get(session).push(record.ratings);
+
+                        return sessionGroups;
+
+                    }, new Map());
+
+                    groups[instructor] = sessionGroups;
+                    return groups;
+
+                }, responseData);
+
+                console.log(responseData);
+
+                // Then foreach instructor and foreach session, take the avg rating score
             })
             .catch(error => {
 
