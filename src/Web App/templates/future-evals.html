@@ -14,12 +14,12 @@
     <div id="container" style="width:100%; height:400px;"></div>
 
     <script>
-        const courseCode = "CSC148H1";
+        const courseCode = "CSC343H1";
         // const prof = "David Liu";
         const url = "http://localhost:8080/api/v1/evals/past";
         const termToMonth = { 'Winter': 0, 'Summer': 4, 'Fall': 8 };
 
-        axios.get(url, { params: {course_code: courseCode } })
+        axios.get(url, { params: { course_code: courseCode } })
             .then(data => {
                 let responseData = data.data;
 
@@ -43,7 +43,7 @@
 
                 // We then want to grab each unique sessions and sort the sessions
                 let sessions = responseData.reduce((sessions, record) => {
-                    if (sessions.length == 0 || sessions[sessions.length-1].date < record.session.date) {
+                    if (sessions.length == 0 || sessions[sessions.length - 1].date < record.session.date) {
                         sessions.push(record.session);
                     }
                     return sessions;
@@ -52,7 +52,7 @@
                 // Then we want to group records based on their instructors
                 responseData = responseData.reduce((groups, record) => {
                     let instructor = record.instructor;
-                        
+
                     if (!groups.has(instructor)) {
                         groups.set(instructor, []);
                     }
@@ -67,7 +67,7 @@
 
                     let data = groups.get(instructor);
                     let sessionGroups = data.reduce((sessionGroups, record) => {
-                        
+
                         let session = record.session.text;
 
                         if (!sessionGroups.has(session)) {
@@ -95,7 +95,7 @@
 
                         // console.log(sessionGroups);
                         // console.log(session);
-                        
+
                         let sessionRatings = sessionGroups.get(session);
                         let avgSessionRatings = [];
 
@@ -108,7 +108,7 @@
                             avgRating /= sessionRatings.length;
                             avgSessionRatings.push(avgRating);
                         }
-                        
+
                         // console.log(avgSessionRatings);
                         sessionGroups.set(session, avgSessionRatings);
                         return sessionGroups;
@@ -120,77 +120,70 @@
 
                 }, responseData);
 
-                console.log(responseData);
+                // Now format the data so that we get this:
+                /**
+                 * [
+                     name: 'David Liu',
+                     data: {
+                         x: "Fall 2019",
+                         y: 20
+                     }
+                 ]
+                 */
+                let series = Array.from(responseData.keys()).map(instructor => {
+                    let seriesData = Array.from(responseData.get(instructor).keys()).map(session => {
+                        return [
+                            session,
+                            responseData.get(instructor).get(session)[0]
+                        ];
+                    });
+                    return {
+                        name: instructor,
+                        data: seriesData
+                    };
+                });
+
+                let categories = sessions.map(session => session.text);
+
+                console.log(series);
+                console.log(categories);
+
+                Highcharts.chart('container', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: `${courseCode} Ratings`
+                    },
+                    subtitle: {
+                        text: 'Source: WorldClimate.com'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        categories: categories,
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 1,
+                        max: 4.5,
+                        title: {
+                            text: 'Ratings'
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y:.1f} stars</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    series: series
+                });
             })
             .catch(error => {
 
             });
-
-        Highcharts.chart('container', {
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Monthly Average Rainfall'
-            },
-            subtitle: {
-                text: 'Source: WorldClimate.com'
-            },
-            xAxis: {
-                categories: [
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'May',
-                    'Jun',
-                    'Jul',
-                    'Aug',
-                    'Sep',
-                    'Oct',
-                    'Nov',
-                    'Dec'
-                ],
-                crosshair: true
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Rainfall (mm)'
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
-                }
-            },
-            series: [{
-                name: 'Tokyo',
-                data: [[1, 49.9], [3, 71.5], [1, 106.4]]
-
-            }, {
-                name: 'New York',
-                data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
-
-            }, {
-                name: 'London',
-                data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
-
-            }, {
-                name: 'Berlin',
-                data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
-
-            }]
-        });
     </script>
 </body>
 
