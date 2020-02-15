@@ -11,13 +11,180 @@
 
 <body>
     <h1></h1>
-    <div id="container" style="width:100%; height:400px;"></div>
+    <div id="course_ratings_container" style="width:80%; height:400px;"></div>
+    <div id="prof_ratings_container" style="width:80%; height:400px;"></div>
 
     <script>
         const courseCode = "CSC343H1";
-        // const prof = "David Liu";
+        const prof = "Daniela Rosu";
         const url = "http://localhost:8080/api/v1/evals/past";
         const termToMonth = { 'Winter': 0, 'Summer': 4, 'Fall': 8 };
+
+        axios.get(url, { params: { instructor: prof } })
+            .then(data => {
+                let responseData = data.data;
+
+                // Compute sessions which is like { text: "Winter 2019", date: Date(mm, dd, yyyy) }
+                responseData = responseData.map(record => {
+                    let month = termToMonth[record['term']];
+                    let year = parseInt(record['year'])
+                    return {
+                        session: {
+                            date: new Date(year, month, 1),
+                            text: `${record['term']} ${record['year']}`
+                        },
+                        ...record
+                    };
+                });
+
+                // Sort them based on their session
+                responseData = responseData.sort((a, b) => {
+                    return a.session.date - b.session.date;
+                });
+
+                // We then want to grab each unique sessions and sort the sessions
+                let sessions = responseData.reduce((sessions, record) => {
+                    if (sessions.length == 0 || sessions[sessions.length - 1].date < record.session.date) {
+                        sessions.push(record.session);
+                    }
+                    return sessions;
+                }, []);
+
+                // Then we want to group records based on their course code
+                responseData = responseData.reduce((groups, record) => {
+                    let courseCode = record['course_code'];
+
+                    if (!groups.has(courseCode)) {
+                        groups.set(courseCode, []);
+                    }
+                    groups.get(courseCode).push(record);
+
+                    return groups;
+
+                }, new Map());
+
+                // Then foreach course, we want to group ratings based on their session
+                responseData = Array.from(responseData.keys()).reduce((groups, courseCode) => {
+
+                    let data = groups.get(courseCode);
+                    let sessionGroups = data.reduce((sessionGroups, record) => {
+
+                        let session = record.session.text;
+
+                        if (!sessionGroups.has(session)) {
+                            sessionGroups.set(session, []);
+                        }
+
+                        sessionGroups.get(session).push(record.ratings);
+
+                        return sessionGroups;
+
+                    }, new Map());
+
+                    groups.set(courseCode, sessionGroups);
+                    return groups;
+
+                }, responseData);
+
+                // Then foreach course and foreach session, take the avg rating score
+                responseData = Array.from(responseData.keys()).reduce((groups, courseCode) => {
+                    // console.log(groups);
+                    // console.log(instructor);
+
+                    let data = groups.get(courseCode);
+                    let sessionGroups = Array.from(data.keys()).reduce((sessionGroups, session) => {
+
+                        // console.log(sessionGroups);
+                        // console.log(session);
+
+                        let sessionRatings = sessionGroups.get(session);
+                        let avgSessionRatings = [];
+
+                        for (let j = 0; j < sessionRatings[0].length; j++) {
+                            let avgRating = 0;
+                            for (let i = 0; i < sessionRatings.length; i++) {
+                                avgRating += sessionRatings[i][j];
+                            }
+
+                            avgRating /= sessionRatings.length;
+                            avgSessionRatings.push(avgRating);
+                        }
+
+                        // console.log(avgSessionRatings);
+                        sessionGroups.set(session, avgSessionRatings);
+                        return sessionGroups;
+
+                    }, data);
+
+                    groups.set(courseCode, sessionGroups);
+                    return groups;
+
+                }, responseData);
+
+                // Now format the data so that we get this:
+                /**
+                 * [
+                     name: 'CSC324H1',
+                     data: {
+                         x: "Fall 2019",
+                         y: 20
+                     }
+                 ]
+                 */
+                let series = Array.from(responseData.keys()).map(courseCode => {
+                    let seriesData = Array.from(responseData.get(courseCode).keys()).map(session => {
+                        return [
+                            session,
+                            responseData.get(courseCode).get(session)[0]
+                        ];
+                    });
+                    return {
+                        name: courseCode,
+                        data: seriesData
+                    };
+                });
+
+                let categories = sessions.map(session => session.text);
+
+                console.log(series);
+                console.log(categories);
+
+                Highcharts.chart('prof_ratings_container', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: `${prof} Ratings`
+                    },
+                    subtitle: {
+                        text: 'Source: WorldClimate.com'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        categories: categories,
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 1,
+                        max: 4.5,
+                        title: {
+                            text: 'Ratings'
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y:.1f} stars</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    series: series
+                });
+            })
+            .catch(error => {
+
+            });
 
         axios.get(url, { params: { course_code: courseCode } })
             .then(data => {
@@ -148,7 +315,7 @@
                 console.log(series);
                 console.log(categories);
 
-                Highcharts.chart('container', {
+                Highcharts.chart('course_ratings_container', {
                     chart: {
                         type: 'column'
                     },
