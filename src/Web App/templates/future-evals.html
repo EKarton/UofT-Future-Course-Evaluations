@@ -80,14 +80,47 @@
 
                     }, new Map());
 
-                    groups[instructor] = sessionGroups;
+                    groups.set(instructor, sessionGroups);
+                    return groups;
+
+                }, responseData);
+
+                // Then foreach instructor and foreach session, take the avg rating score
+                responseData = Array.from(responseData.keys()).reduce((groups, instructor) => {
+                    // console.log(groups);
+                    // console.log(instructor);
+
+                    let data = groups.get(instructor);
+                    let sessionGroups = Array.from(data.keys()).reduce((sessionGroups, session) => {
+
+                        // console.log(sessionGroups);
+                        // console.log(session);
+                        
+                        let sessionRatings = sessionGroups.get(session);
+                        let avgSessionRatings = [];
+
+                        for (let j = 0; j < sessionRatings[0].length; j++) {
+                            let avgRating = 0;
+                            for (let i = 0; i < sessionRatings.length; i++) {
+                                avgRating += sessionRatings[i][j];
+                            }
+
+                            avgRating /= sessionRatings.length;
+                            avgSessionRatings.push(avgRating);
+                        }
+                        
+                        // console.log(avgSessionRatings);
+                        sessionGroups.set(session, avgSessionRatings);
+                        return sessionGroups;
+
+                    }, data);
+
+                    groups.set(instructor, sessionGroups);
                     return groups;
 
                 }, responseData);
 
                 console.log(responseData);
-
-                // Then foreach instructor and foreach session, take the avg rating score
             })
             .catch(error => {
 
