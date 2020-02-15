@@ -15,8 +15,8 @@
     <div id="prof_ratings_container" style="width:80%; height:400px;"></div>
 
     <script>
-        const courseCode = "CSC343H1";
-        const prof = "Daniela Rosu";
+        const courseCode = "CSC148H1";
+        const prof = "David Liu";
         const url = "http://localhost:8080/api/v1/evals/past";
         const termToMonth = { 'Winter': 0, 'Summer': 4, 'Fall': 8 };
 
@@ -88,14 +88,9 @@
 
                 // Then foreach course and foreach session, take the avg rating score
                 responseData = Array.from(responseData.keys()).reduce((groups, courseCode) => {
-                    // console.log(groups);
-                    // console.log(instructor);
 
                     let data = groups.get(courseCode);
                     let sessionGroups = Array.from(data.keys()).reduce((sessionGroups, session) => {
-
-                        // console.log(sessionGroups);
-                        // console.log(session);
 
                         let sessionRatings = sessionGroups.get(session);
                         let avgSessionRatings = [];
@@ -110,7 +105,6 @@
                             avgSessionRatings.push(avgRating);
                         }
 
-                        // console.log(avgSessionRatings);
                         sessionGroups.set(session, avgSessionRatings);
                         return sessionGroups;
 
@@ -146,18 +140,15 @@
 
                 let categories = sessions.map(session => session.text);
 
-                console.log(series);
-                console.log(categories);
-
                 Highcharts.chart('prof_ratings_container', {
                     chart: {
                         type: 'column'
                     },
                     title: {
-                        text: `${prof} Ratings`
+                        text: `Past ${prof} Ratings`
                     },
                     subtitle: {
-                        text: 'Source: WorldClimate.com'
+                        text: 'Source: Course Evaluations'
                     },
                     xAxis: {
                         type: 'category',
@@ -254,14 +245,9 @@
 
                 // Then foreach instructor and foreach session, take the avg rating score
                 responseData = Array.from(responseData.keys()).reduce((groups, instructor) => {
-                    // console.log(groups);
-                    // console.log(instructor);
 
                     let data = groups.get(instructor);
                     let sessionGroups = Array.from(data.keys()).reduce((sessionGroups, session) => {
-
-                        // console.log(sessionGroups);
-                        // console.log(session);
 
                         let sessionRatings = sessionGroups.get(session);
                         let avgSessionRatings = [];
@@ -276,7 +262,6 @@
                             avgSessionRatings.push(avgRating);
                         }
 
-                        // console.log(avgSessionRatings);
                         sessionGroups.set(session, avgSessionRatings);
                         return sessionGroups;
 
@@ -312,18 +297,15 @@
 
                 let categories = sessions.map(session => session.text);
 
-                console.log(series);
-                console.log(categories);
-
                 Highcharts.chart('course_ratings_container', {
                     chart: {
                         type: 'column'
                     },
                     title: {
-                        text: `${courseCode} Ratings`
+                        text: `Past ${courseCode} Ratings`
                     },
                     subtitle: {
-                        text: 'Source: WorldClimate.com'
+                        text: 'Source: Course Evaluations'
                     },
                     xAxis: {
                         type: 'category',
