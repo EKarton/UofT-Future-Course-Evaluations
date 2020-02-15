@@ -11,8 +11,10 @@
 
 <body>
     <h1></h1>
-    <div id="course_ratings_container" style="width:80%; height:400px;"></div>
-    <div id="prof_ratings_container" style="width:80%; height:400px;"></div>
+    <div style="width:60%; margin:0 auto;">
+        <div id="course_ratings_container" style="width:100%; height:400px;"></div>
+        <div id="prof_ratings_container" style="width:100%; height:400px;"></div>
+    </div>
 
     <script>
         const courseCode = "CSC148H1";
@@ -145,7 +147,7 @@
                         type: 'column'
                     },
                     title: {
-                        text: `Past ${prof} Ratings`
+                        text: `Past Course Ratings ${prof} Taught`
                     },
                     subtitle: {
                         text: 'Source: Course Evaluations'
