@@ -52,7 +52,7 @@ After clicking the Update button on the Chrome Extension, it will update the cou
 
 Chrome Extension on the Chrome Web Store: [https://chrome.google.com/webstore/detail/uoft-timetable-course-rat/hkkijphcfllifpnmagnanfdonfemgoec?authuser=1](https://chrome.google.com/webstore/detail/uoft-timetable-course-rat/hkkijphcfllifpnmagnanfdonfemgoec?authuser=1)
 
-Live Web App on Heroku: [http://uoft-project.herokuapp.com/](http://uoft-project.herokuapp.com/)
+Live Web App on Heroku: [https://uoft-future-course-evals.herokuapp.com/](https://uoft-future-course-evals.herokuapp.com/)
 
 ### Installation
 ##### Required Programs and Tools:
