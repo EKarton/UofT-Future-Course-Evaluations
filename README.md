@@ -8,7 +8,7 @@ The UofT Future Course Evaluations project is a full stack web development proje
 ### Table of Contents
 - Walkthrough
 - Installation
-- Deploying on AWS
+- Deployment
 - Usage
 - Todo
 - Credits
@@ -52,9 +52,7 @@ After clicking the Update button on the Chrome Extension, it will update the cou
 
 Chrome Extension on the Chrome Web Store: [https://chrome.google.com/webstore/detail/uoft-timetable-course-rat/hkkijphcfllifpnmagnanfdonfemgoec?authuser=1](https://chrome.google.com/webstore/detail/uoft-timetable-course-rat/hkkijphcfllifpnmagnanfdonfemgoec?authuser=1)
 
-Live HTTP instance of Web Api on AWS: [http://uoft-future-course-evals-lb-1-756647563.us-east-1.elb.amazonaws.com/](http://uoft-future-course-evals-lb-1-756647563.us-east-1.elb.amazonaws.com/)
-
-Live HTTPS Proxied instance of Web Api on AWS: [http://uoft-project.herokuapp.com/](http://uoft-project.herokuapp.com/)
+Live Web App on Heroku: [http://uoft-project.herokuapp.com/](http://uoft-project.herokuapp.com/)
 
 ### Installation
 ##### Required Programs and Tools:
@@ -104,8 +102,9 @@ Live HTTPS Proxied instance of Web Api on AWS: [http://uoft-project.herokuapp.co
 7. Reload the page
 8. Load some courses. It should now show the predicted course ratings.
 
-### Deploying on AWS
-- Refer to [Docs for AWS](docs/deployment-readme/README.md)
+### Deployment
+- To deploy on AWS, refer to [Docs for AWS](docs/deployment-readme/README.md)
+- To deploy on Heroku, refer to [Docs for Heroku](https://devcenter.heroku.com/articles/container-registry-and-runtime)
 
 ### Todo
 - Add a web page justifying why its predicted course rating is the way it is (by displaying real past data)

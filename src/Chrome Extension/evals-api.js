@@ -7,7 +7,7 @@ var EvalsApi = {
      * @param {List<String>} abbrevInstructorNames list of abbrev. instructor names
      */
     getRatings: function (courseCodes, abbrevInstructorNames) {
-        const EVALS_BULK_WEB_API_BASE_URL = 'https://uoft-project.herokuapp.com/api/v2/bulk/evals/future';
+        const EVALS_BULK_WEB_API_BASE_URL = 'https://uoft-future-course-evals.herokuapp.com/api/v2/bulk/evals/future';
 
         return new Promise((resolve, reject) => {
 

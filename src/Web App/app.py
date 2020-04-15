@@ -14,6 +14,7 @@ from instructors_table import InstructorsTable
 
 # Web app libraries
 from flask import Flask, request, redirect, url_for, flash, jsonify, render_template
+from flask_cors import CORS, cross_origin
 import pickle as p
 import json
 import base64
@@ -22,6 +23,8 @@ import os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
+CORS(app)
+
 model = None
 input_encoder = None
 output_scaler = None
@@ -30,6 +33,7 @@ instructors_table = None
 def make_prediction(course_code, instructor):
     new_input = np.array([[course_code, instructor]])
     new_input = input_encoder.transform(new_input)
+    new_input = new_input.toarray()
 
     prediction = model.predict(new_input)
     return output_scaler.inverse_transform(prediction)
@@ -169,6 +173,7 @@ def get_course_ratings_by_course_code_and_instructor(course_code, instructor_nam
     return parsed_results
 
 @app.route('/api/v1/evals/past', methods=['GET'])
+# @cross_origin(origins="*", methods=['GET'])
 def get_past_evals():
     course_code = None
     instructor = None
@@ -201,6 +206,7 @@ def get_past_evals():
         return jsonify(get_course_ratings_by_course_code_and_instructor(course_code, instructor)), 200
 
 @app.route('/api/evals/future', methods=['GET'])
+# @cross_origin(origins="*", methods=['GET'])
 def get_future_evals():
     course = request.args.get('course')
     instructor = None
@@ -227,7 +233,8 @@ def get_future_evals():
     try:
         ratings = make_prediction(course, instructor)[0].tolist()
         return jsonify(ratings), 200
-    except:
+    except Exception as e:
+        print("Exception raised:", e, file=sys.stderr)
         return 'Rating with course ' + course + ' with instructor ' + instructor + ' cannot be determined', 400
 
 def handle_bulk_request(courses, instructors, abbrev_instructors):
@@ -254,7 +261,8 @@ def handle_bulk_request(courses, instructors, abbrev_instructors):
                 'ratings': ratings
             }
 
-        except:
+        except Exception as e:
+            print("Exception raised:", e, file=sys.stderr)
             result = {
                 'course': course,
                 'instructor': instructor_name_in_response,
@@ -267,6 +275,7 @@ def handle_bulk_request(courses, instructors, abbrev_instructors):
     return jsonify(results), 200
 
 @app.route('/api/v2/bulk/evals/future', methods=['POST'])
+# @cross_origin(origins="*", methods=['POST'])
 def post_future_evals_in_bulk():
     courses = None
     instructors = None
@@ -299,6 +308,7 @@ def post_future_evals_in_bulk():
     return handle_bulk_request(courses, instructors, abbrev_instructors)
 
 @app.route('/api/bulk/evals/future', methods=['GET'])
+# @cross_origin(origins="*", methods=['GET'])
 def get_future_evals_in_bulk():
     courses = None
     instructors = None
@@ -328,14 +338,18 @@ def get_future_evals_in_bulk():
     return handle_bulk_request(courses, instructors, abbrev_instructors)
 
 @app.route('/api/status', methods=['GET'])
+# @cross_origin(origins="*", methods=['GET'])
 def get_status():
     return 'OK', 200
 
 @app.route('/evals/future', methods=['GET'])
+# @cross_origin(origins="*", methods=['GET'])
 def get_future_evals_page():
     return render_template('future-evals.html')
 
-if __name__ == '__main__':
+def load_app_prerequisites():
+    global model, input_encoder, output_scaler, instructors_table
+
     # Load credentials from the .env file
     load_dotenv()
 
@@ -363,4 +377,6 @@ if __name__ == '__main__':
     output_scaler_file = '../ML Model/saved-output-scalar.pkl'
     output_scaler = p.load(open(output_scaler_file, 'rb'))
 
+if __name__ == '__main__':
+    load_app_prerequisites()
     app.run(debug=is_debugging_on, host='0.0.0.0', port=app_port)

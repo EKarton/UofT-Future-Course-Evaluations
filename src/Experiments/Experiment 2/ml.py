@@ -66,7 +66,7 @@ def get_model(X_train, X_test, y_train, y_test):
 
     model.fit(X_train, y_train, epochs=30)
 
-    test_loss, test_acc = model.evaluate(X_train, y_train, verbose=2)
+    test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
     print('Test accuracy:', test_acc, 'Test loss:', test_loss)
 
     return model

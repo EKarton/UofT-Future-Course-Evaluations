@@ -1,23 +1,23 @@
 FROM tensorflow/tensorflow:latest-py3
 
-# copy over required files for our web api
-COPY ["Web Api", "/app/Web Api"]
-COPY ["ML Model", "/app/ML Model"]
-COPY ["Database", "/app/Database"]
-COPY ["requirements.txt", "/app/requirements.txt"]
+# Copy over required files for our web api
+COPY ["Web App", "Web App"]
+COPY ["ML Model", "ML Model"]
+COPY ["Database", "Database"]
+COPY ["requirements.txt", "requirements.txt"]
 
-# install dependencies
+# Install dependencies
 RUN pip install -U pip
-RUN pip3 install -r "/app/requirements.txt"
+RUN pip3 install -r "requirements.txt"
 
-# set working directory
-WORKDIR "/app/Web Api"
+# Set working directory
+WORKDIR "Web App"
 
-# create port 5000 for our web api
+# Create port 5000 for our web api
 EXPOSE 5000
 
-# create port 5432 for our local instance of postgresql
+# Create port 5432 for our local instance of postgresql
 EXPOSE 5432
 
-# run the web api at runtime
-CMD ["python3", "app.py"]
+# Run the web api at runtime
+CMD gunicorn --bind 0.0.0.0:$PORT wsgi
